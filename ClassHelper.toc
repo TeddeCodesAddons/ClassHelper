@@ -34,4 +34,5 @@ Features\ModCreator\Panel.lua
 # Settings
 Settings\GeneralOptions.lua
 Settings\API.lua
+Settings\FAQ.lua
 Settings\Profiles.lua
