@@ -1,0 +1,107 @@
+<Ui>
+<Frame name="ClassHelper_NewModFrame" parent="UIParent" hidden="false">
+  <Size x="300" y="150"/>
+  <Anchors>
+    <Anchor point="CENTER"/>
+  </Anchors>
+  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+    <BackgroundInsets>
+      <AbsInset left="11" right="12" top="12" bottom="11"/>
+    </BackgroundInsets>
+    <TileSize>
+      <AbsValue val="32"/>
+    </TileSize>
+    <EdgeSize>
+      <AbsValue val="32"/>
+    </EdgeSize>
+  </Backdrop>
+  <Frames>
+    <EditBox name="ClassHelper_NewModNameBox" inherits="InputBoxTemplate" autoFocus="false">
+      <Size>
+        <AbsDimension x="260" y="20"/>
+      </Size>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="-30"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <FontString inherits="GameFontNormal"/>
+    </EditBox>
+    <Button name="NewModFrame_Create" text="Create">
+      <Size x="80" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="100" y="-55"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper:CreateNewMod(ClassHelper_NewModNameBox:GetText())
+          ClassHelper_NewModFrame:Hide()
+        </OnClick>
+      </Scripts>
+    </Button>
+    <Button name="ClassHelper_NewModFrame_Cancel" text="Cancel">
+      <Size x="80" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="-100" y="-55"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper_NewModFrame:Hide()
+        </OnClick>
+      </Scripts>
+    </Button>
+  </Frames>
+  <Layers>
+    <Layer level="OVERLAY">
+      <FontString name="ClassHelper_NewModFrame_CreateModText" inherits="GameFontNormal" justifyH="Center" setAllPoints="true" text="Type a name for the mod here:">
+        <Anchors>
+          <Anchor point="CENTER">
+            <Offset>
+              <AbsDimension x="0" y="55"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+    </Layer>
+  </Layers>
+  <Scripts>
+    <OnLoad>
+      ClassHelper_NewModFrame:Hide()
+    </OnLoad>
+    <OnShow>
+      ClassHelper_NewModFrame:SetFrameStrata("TOOLTIP")
+      ClassHelper_NewModFrame:SetFrameLevel(10000)
+    </OnShow>
+  </Scripts>
+</Frame>
+</Ui>
