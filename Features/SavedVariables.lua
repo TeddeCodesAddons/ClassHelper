@@ -305,6 +305,7 @@ local function handle(self,event,...)
         ClassHelper:Print("Type '/ch help' for a list of commands.")
         ClassHelper:Print("Type '/ch' to toggle UI.")
         ClassHelper:Print("To code mods, refer to the API, and make sure to use proper syntax.")
+        ClassHelper:Print("A mod template will be provided, but you will need to provide spell names/IDs, and what you want to happen when those spells are used.")
     end
     if not ClassHelper_Data["backups"]then
         ClassHelper_Data["backups"]={
@@ -327,7 +328,7 @@ local function handle(self,event,...)
     end
     if not ClassHelper_Data["profiles"][profile]["mods"]then
         ClassHelper_Data["profiles"][profile]["mods"]=firstrun_mods
-        ClassHelper:Print("Imported mods to your current profile: "..profile..". (If any packages were included)")
+        ClassHelper:Print("Imported mods to your current profile: "..profile..". (If any mod packages were included)")
         ClassHelper:Print("\124cffff0000If you did not include any mods, you must refer to the API to code your own mods.")
     end
 end
