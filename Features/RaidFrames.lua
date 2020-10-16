@@ -62,11 +62,13 @@ local function handle()
                 end
             end
         end
-        ClassHelper:EditFrameColor("party0",1,0,0,1) -- Pre-initialize tracker
-        ClassHelper:EditFrameColor("party1",1,0,0,1)
-        ClassHelper:EditFrameColor("party2",1,0,0,1)
-        ClassHelper:EditFrameColor("party3",1,0,0,1)
-        ClassHelper:EditFrameColor("party4",1,0,0,1)
+        if ClassHelper.is_healer then
+            ClassHelper:EditFrameColor("party0",1,0,0,1) -- Pre-initialize tracker
+            ClassHelper:EditFrameColor("party1",1,0,0,1)
+            ClassHelper:EditFrameColor("party2",1,0,0,1)
+            ClassHelper:EditFrameColor("party3",1,0,0,1)
+            ClassHelper:EditFrameColor("party4",1,0,0,1)
+        end
         function ClassHelper:GetAccurateUnit(name)
             if GetNumGroupMembers()>1 then
                 for i=1,GetNumGroupMembers()-1 do

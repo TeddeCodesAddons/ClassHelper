@@ -71,7 +71,7 @@ local editorPanelTexture=editorPanel:CreateTexture(nil,"BACKGROUND")
 editorPanelTexture:SetPoint("CENTER")
 editorPanelTexture:SetSize(800,680)
 editorPanelTexture:SetColorTexture(0.1,0.1,0.1,0.8)
-local editorNav=CreateFrame("FRAME",nil,panel)
+local editorNav=CreateFrame("FRAME",nil,panel,BackdropTemplateMixin and "BackdropTemplate")
 editorNav:SetSize(240,40)
 editorNav:SetPoint("TOPLEFT",20,-20)
 editorNav:SetFrameStrata("HIGH")
@@ -400,7 +400,7 @@ function ClassHelper:NewUIPanel(title)
     if panelTitles[title]then
         return nil
     end
-    local Nav=CreateFrame("FRAME",nil,panel)
+    local Nav=CreateFrame("FRAME",nil,panel,BackdropTemplateMixin and "BackdropTemplate")
     Nav:SetSize(240,40)
     Nav:SetPoint("TOPLEFT",lastPane,"TOPLEFT",0,-40)
     lastPane=Nav

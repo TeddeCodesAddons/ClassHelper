@@ -76,6 +76,26 @@ This bar can be used to track a cooldown, if specified, but MUST be a spell ID.
 (If you don't know, use '/ch debug' and cast the spell to get the ID.)
 If you are tracking an aura, this does not need to be specified, but is important
 if tracking a cooldown. (Reduction and haste reduce time)]],150,"Creating objects and warnings")
+newCmd("<Bar functions>",[[-- Examples
+bar:RegisterEvent(0,function()print("Bar expired!")end)
+bar:SetColor(1,0,0.5,1)
+bar:SetReserved(true)
+local function countdownFunc()
+    ClassHelper:VoiceCountdown(5)
+end
+bar:RegisterEvent(5,countdownFunc)
+bar:Pause()
+bar:SetConstantMaxTime(10) -- Force the bar to be 10 sec or less...
+C_Timer.NewTimer(1,function()bar:Resume()end)]],[[bar:RegisterEvent(time,func) will cause the bar to run the function when the time hits the set time. (Useful for countdowns, and expirations)
+bar:SetColor(r,g,b[,a]) will change the bar's color permanently to the selected color. It will no longer update to time remaining.
+bar:Pause() and bar:Resume() will pause and resume the countdown on a bar. EX: You want the bar to freeze, it will stop until resumed.
+bar:SetConstantMaxTime(max_time) will prevent the bar from going above the maximum time.
+bar:RemoveConstantMaxTime() will remove this.]],150)
+newCmd("bar:SetReserved",[[local bar=ClassHelper:NewBar(1,"Custom reserved bar"):SetReserved(true):Delete()
+ClassHelper.vars["my reserved bar"]=bar
+bar:SetReserved(true)]],[[If you want to always have the same bar available for using for one thing, you may want to make a reserved bar.
+This is in case your bar expires, and is marked as free memory. Another mod could then use this bar, and mark it as used. When your mod tries to reference this bar again, it will override the old bar, and hide it permanently.
+To fix this, use bar:SetReserved(true), and if you don't want to use it anymore, use bar:SetReserved(false)]],150)
 newCmd("ClassHelper:PlayWarningSound",[[ClassHelper:PlayWarningSound("sound name")]],[[Plays a sound. Available sounds are:
 airhorn
 warning

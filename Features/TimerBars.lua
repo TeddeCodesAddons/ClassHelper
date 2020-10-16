@@ -65,7 +65,9 @@ local function createBar()
         },
         enabled=false,
         idx=numBars,
-        is_restricted=false
+        is_restricted=false,
+        reserved=false,
+        paused=false
     }
     function barObject:Start(totalTime,text,cooldown)
         if cooldown~=nil then
@@ -75,12 +77,17 @@ local function createBar()
         end
         totalTime=ClassHelper:ConvertTime(totalTime)
         local t=GetTime()
-        bar:Hide()
-        self.start_time=t
+        self.color=nil
+        if self.maxTime then
+            self.start_time=t-(self.maxTime-totalTime)
+        else
+            self.start_time=t
+        end
         self.end_time=totalTime+t
         self.current_time=t
         self.last_update=t
         self.text=text
+        self.paused=false
         self.events={
 
         }
@@ -91,6 +98,10 @@ local function createBar()
     end
     function barObject:RegisterEvent(_time,_function)
         tinsert(self.events,{_time,_function,false})
+        return self
+    end
+    function barObject:Resume()
+        self.paused=false
         return self
     end
     function barObject:Stop()
@@ -110,6 +121,10 @@ local function createBar()
         bar:ClearAllPoints()
         bar:SetPoint("TOP",barAnchor,"TOP",0,pos*-24)
     end
+    function barObject:SetReserved(isReserved)
+        self.reserved=isReserved
+        return self
+    end
     function barObject:ChangeTime(_time,setEqual)
         if setEqual and not(self.is_restricted and _time<self.current_time)then
             self.current_time=self.end_time-_time
@@ -122,7 +137,26 @@ local function createBar()
         end
         return self
     end
+    function barObject:SetColor(r,g,b,a)
+        if not a then a=1 end
+        self.color={
+            r,
+            g,
+            b,
+            a
+        }
+        return self
+    end
+    function barObject:SetConstantMaxTime(maxTime)
+        self.maxTime=maxTime
+        return self
+    end
+    function barObject:RemoveConstantMaxTime()
+        self.maxTime=nil
+        return self
+    end
     local function update()
+        if barObject.paused then return end
         if barObject.enabled then
             bar:Show()
             if barObject.cooldown==-1 then
@@ -140,10 +174,14 @@ local function createBar()
             t2:SetSize(1+((st/tt)*255),24)
             st=st*2
             et=et*2
-            if st>tt then
-                t1:SetColorTexture(1,et/tt,0,1)
+            if barObject.color then
+                t1:SetColorTexture(barObject.color[1],barObject.color[2],barObject.color[3],barObject.color[4])
             else
-                t1:SetColorTexture(st/tt,1,0,1)
+                if st>tt then
+                    t1:SetColorTexture(1,et/tt,0,1)
+                else
+                    t1:SetColorTexture(st/tt,1,0,1)
+                end
             end
             if getn(barObject.events)>0 then
                 for i=1,getn(barObject.events)do
@@ -157,6 +195,11 @@ local function createBar()
                 barObject:Stop()
             end
         end
+    end
+    function barObject:Pause()
+        update()
+        self.paused=true
+        return self
     end
     C_Timer.NewTicker(0.05,update)
     update()
@@ -207,7 +250,9 @@ function ClassHelper:NewBar(_time,text,cooldown)
         for i=1,getn(all_bars)do
             if all_bars[i].text==text or not all_bars[i].enabled then
                 if barObject=="none"or all_bars[i].idx<barObject.idx then
-                    barObject=all_bars[i]
+                    if not all_bars[i].reserved then
+                        barObject=all_bars[i]
+                    end
                 end
             end
         end

@@ -4,6 +4,9 @@ local loaded_mods={
 local already_loaded={
 
 }
+local modvars={ -- New feature, allows mods to have their own environment, rather than making global variables.
+
+}
 function ClassHelper:LoadAllCurrentMods()
     local class=UnitClass("player")
     local specId=""
@@ -48,6 +51,16 @@ function ClassHelper:LoadAllCurrentMods()
                 }
                 function modObject:Load()
                     if self.loadable and not self.loaded then
+                        if modvars[self.title]then
+                            ClassHelper.vars=modvars[self.title]
+                        else
+                            modvars[self.title]={
+
+                            }
+                            ClassHelper.vars={
+
+                            }
+                        end
                         if strlower(self.load)=="custom"then
                             if self.firstrun then
                                 RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.init)
@@ -71,14 +84,18 @@ function ClassHelper:LoadAllCurrentMods()
                             end
                             self.loaded=true
                         end
+                        modvars[self.title]=ClassHelper.vars
                     end
                 end
                 function modObject:Run()
+                    ClassHelper.vars=modvars[self.title]
                     if self.loaded and self.loadable then
                         RunScript(self.data)
                     end
+                    modvars[self.title]=ClassHelper.vars
                 end
                 function modObject:Unload()
+                    ClassHelper.vars=modvars[self.title]
                     if self.loaded and self.unload~=""then
                         RunScript("ClassHelper.system_unloadMod=false local function UNLOAD()ClassHelper.system_unloadMod=true end;"..self.unload)
                         if ClassHelper.system_unloadMod then
@@ -86,6 +103,7 @@ function ClassHelper:LoadAllCurrentMods()
                         end
                         ClassHelper.system_unloadMod=nil -- Never store this value.
                     end
+                    modvars[self.title]=ClassHelper.vars
                 end
                 tinsert(loaded_mods,modObject)
                 if strlower(m.load)~="custom"then
