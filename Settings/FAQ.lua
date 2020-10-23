@@ -55,6 +55,10 @@ Airhorn()
 |r'/alert <code here>': Will run the code every 0.1 sec. (Sort-of like '/run' except repeated.)]],200)
 newFAQ("SendChatMessage() not working",[[If you are tying to use a callout while outside of an instance, you will just get the message "Interface action failed because of an AddOn", and the sending will fail.
 This is because addons can only send chat messages to global chat while inside an instance, for obvious reasons. (Spamming bots, etc)]],200)
+newFAQ("What are reserved bars?",[[Reserved timer bars can be used if you don't want the bar to override another bar when the pointer is being used.
+In the most basic situations, you won't need to do this, but in some situations, you may want a bar that restarts when a tracked aura reappears.
+In this case, you could just create a new bar if it doesn't exist anymore, or you could set it to reserved when you create it the first time.
+Reserved bars never get deleted, so watch out how many you create! (Normal bars show below reserved bars)]],200)
 newFAQ("What can ClassHelper do?",[[If this AddOn is seemingly useless, try using it on a healer, as the raidframes feature is very useful. If your class uses power of any type, try adding power bars on your screen. (Warlocks, Druids, Paladins, ... all use power of some type)
 Also, this addon can do just about anything you tell it to do! The code you put in the editor is run with RunScript(), so you can even make your own addons in there, and this addon will automatically load them on demand! (No .toc file required)]],200)
 newFAQ("I don't know how to code",[[In case you don't know how to code, I am working on mods for all classes. If you want a mod for specifically your class, simply ask me on

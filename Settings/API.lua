@@ -133,7 +133,8 @@ barObject:SetDynamicColor()
 barObject:Unlock()
 barObject:Lock()
 barObject:GetPosition()
-barObject:Update() -- Automatic if bar isn't dynamic.]],[[DisplayNumber(), DisplayPercent(), SetDisplayMode() - Changes the way the bar displays power, if it's PERCENT, and you have 400/500 mana, you will see 80%, if it's NUMBER, you will see 400.
+barObject:Update() -- Automatic if bar isn't dynamic.
+barObject:SetReserved(isReserved) -- See the FAQ on reserved timer bars.]],[[DisplayNumber(), DisplayPercent(), SetDisplayMode() - Changes the way the bar displays power, if it's PERCENT, and you have 400/500 mana, you will see 80%, if it's NUMBER, you will see 400.
 SetSize(), SetColor(), Show(), Hide(), Unlock(), Lock(), GetPosition(), ClearFade() do exactly as they say.
 **When using SetColor(), keep in mind colors cannot be 0-255 and MUST be 0-1, with decimals if needed.
 **When using SetPoint(), the only syntax accepted is point,x,y,relative. Point can be CENTER, TOP, BOTTOM, etc... Default relative is UIParent.
@@ -168,6 +169,15 @@ all
 |cffff6600Example: |rspec:Warlock Destruction |cffff6600will load on Destruction Warlock spec.]],175,"Loading a mod")
 newCmd("<Unloading a mod>",[[-- To unload your mods, use UNLOAD(), if the mod is still needed, don't run this.
 UNLOAD()]],"This command confirms the unloading of the mod. A common error is to unload the mod anyway, but not run this command. The data will still run unless unloaded.",150)
+newCmd("ClassHelper.vars",[[-- You could do this
+ClassHelper.vars["power_text_frame"]=myFrame
+-- Or you could...
+ClassHelper.vars["last_timestamp"]=GetTime()
+-- The possibilities are endless, you can use these as though they were local variables, and they won't interfere with other mods.
+-- EX: if another mod had ClassHelper.vars["power_text_frame"]=myFrame2
+-- This would not affect the first mod. (Stored in a separate table)]],[[The |cffff6600ClassHelper.vars|r feature allows the user to create local variables.
+These are shared between m.data, m.init, m.unload, and m.reinit, but are not shared by other mods.
+If you want two mods to use the same variable, define it under |cffff6600_G|r (The well-known global table)]],150,"Local variables")
 local detectFontFrame=CreateFrame("FRAME")
 detectFontFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 detectFontFrame:SetScript("OnEvent",function()

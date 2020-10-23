@@ -7,6 +7,7 @@ local already_loaded={
 local modvars={ -- New feature, allows mods to have their own environment, rather than making global variables.
 
 }
+local spec_msg_displayed=false
 function ClassHelper:LoadAllCurrentMods()
     local class=UnitClass("player")
     local specId=""
@@ -14,6 +15,13 @@ function ClassHelper:LoadAllCurrentMods()
     if GetSpecialization then -- Classic WoW does not have this feature.
         specId=GetSpecialization()
         spec=self.all_specs[class][specId]
+    end
+    if spec==nil then -- If GetSpecialization() returns an invalid spec, you likely haven't selected a spec.
+        spec="None"
+        if not spec_msg_displayed then
+            spec_msg_displayed=true
+            self:Print("\124cffff0000This character has not selected a specialization. \124cffffff00Specialization-specific mods will not be loaded.")
+        end
     end
     local zone=GetZoneText()
     local zoneid=select(8,GetInstanceInfo())

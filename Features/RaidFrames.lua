@@ -12,10 +12,12 @@ local function handle()
         }
         ClassHelper.is_healer=false
         ClassHelper.raid_frames_message_displayed=false
+        local frames_reset=false
         function ClassHelper:UpdateRaidframes()
             local high=self:Load("Raidframes","ThresholdHigh")
             local low=self:Load("Raidframes","ThresholdLow")
             if IsInRaid()and self.is_healer and self:Load("Raidframes","Enabled")=="true"then
+                frames_reset=false
                 if not self.raid_frames_message_displayed then
                     self.raid_frames_message_displayed=true
                     self:Print("Raidframes plugin is enabled. Type '/ch help raidframes' for more info.")
@@ -40,6 +42,13 @@ local function handle()
                         else
                             _G["CompactRaidFrame"..i.."HealthBarBackground"]:SetColorTexture(0,1,0,1) -- Green, has aura and above 95%. Don't heal this one or it will overheal.
                         end
+                    end
+                end
+            elseif not frames_reset then -- Reset raid frames if you change spec during a raid.
+                frames_reset=true
+                for i=1,40 do
+                    if _G["CompactRaidFrame"..i.."HealthBarBackground"]then
+                        _G["CompactRaidFrame"..i.."HealthBarBackground"]:SetColorTexture(0,0,0,0)
                     end
                 end
             end
