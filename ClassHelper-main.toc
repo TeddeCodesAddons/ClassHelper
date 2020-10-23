@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Interface: 90001
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
@@ -35,4 +36,43 @@ Features\ModCreator\Panel.lua
 Settings\GeneralOptions.lua
 Settings\API.lua
 Settings\FAQ.lua
+=======
+## Interface: 90001
+## Title: |cffff6600ClassHelper
+## Notes: Lightweight customizable assistant for any player.
+## Version: 9.0.1
+## SavedVariables: ClassHelper_Data
+## LoadOnDemand: 0
+# Core
+Core.lua
+
+# Modules
+Modules\Module_Names.lua
+Modules\Module_Syntax.lua
+
+# Slash commands
+Features\SlashCommands.lua
+
+# Variables
+Features\SavedVariables.lua
+
+# Mod features
+Features\ActionButtons.lua
+Features\AlertSystem.lua
+Features\PowerBars.lua
+Features\RaidFrames.lua
+Features\Sound.lua
+Features\TimerBars.lua
+
+# Mod loader
+Features\ModCreator\Find_and_replace.xml
+Features\ModCreator\New_mod_screen.xml
+Features\ModCreator\Loader.lua
+Features\ModCreator\Panel.lua
+
+# Settings
+Settings\GeneralOptions.lua
+Settings\API.lua
+Settings\FAQ.lua
+>>>>>>> origin/main
 Settings\Profiles.lua
