@@ -1,0 +1,184 @@
+<Ui>
+<Frame name="ClassHelper_FindAndReplaceFrame" parent="UIParent" hidden="false">
+  <Size x="300" y="150"/>
+  <Anchors>
+    <Anchor point="CENTER"/>
+  </Anchors>
+  <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+    <BackgroundInsets>
+      <AbsInset left="11" right="12" top="12" bottom="11"/>
+    </BackgroundInsets>
+    <TileSize>
+      <AbsValue val="32"/>
+    </TileSize>
+    <EdgeSize>
+      <AbsValue val="32"/>
+    </EdgeSize>
+  </Backdrop>
+  <Frames>
+    <EditBox name="ClassHelper_InsertFindAndReplace_FindBox" inherits="InputBoxTemplate" autoFocus="false">
+      <Size>
+        <AbsDimension x="260" y="20"/>
+      </Size>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="55"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <FontString inherits="GameFontNormal"/>
+      <Scripts>
+        <OnEscapePressed>
+          ClassHelper_FindAndReplaceFrame:Hide()
+          ClassHelper:FocusEditor()
+        </OnEscapePressed>
+        <OnEnterPressed>
+          ClassHelper:FindTextInEditor(false,false,"!default",0)
+        </OnEnterPressed>
+        <OnTabPressed>
+          ClassHelper_InsertFindAndReplace_ReplaceBox:SetFocus()
+        </OnTabPressed>
+      </Scripts>
+    </EditBox>
+    <EditBox name="ClassHelper_InsertFindAndReplace_ReplaceBox" inherits="InputBoxTemplate" autoFocus="false">
+      <Size>
+        <AbsDimension x="260" y="20"/>
+      </Size>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="30"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <FontString inherits="GameFontNormal"/>
+      <Scripts>
+        <OnEscapePressed>
+          ClassHelper_FindAndReplaceFrame:Hide()
+          ClassHelper:FocusEditor()
+        </OnEscapePressed>
+        <OnTabPressed>
+          ClassHelper_InsertFindAndReplace_FindBox:SetFocus()
+        </OnTabPressed>
+      </Scripts>
+    </EditBox>
+    <Button name="ClassHelper_FindAndReplaceButton_FindNext" text="Find next">
+      <Size x="80" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="-5"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper:FindTextInEditor(false,false,"!default",0)
+        </OnClick>
+      </Scripts>
+    </Button>
+    <Button name="ClassHelper_FindAndReplaceButton_Replace" text="Replace">
+      <Size x="80" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="-65" y="-30"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper:FindTextInEditor(true,false,"!cursor",0)
+        </OnClick>
+      </Scripts>
+    </Button>
+    <Button name="ClassHelper_FindAndReplaceButton_ReplaceAll" text="Replace all">
+      <Size x="80" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="65" y="-30"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper:FindTextInEditor(true,true,0,0)
+        </OnClick>
+      </Scripts>
+    </Button>
+    <Button name="ClassHelper_FindAndReplaceButton_Cancel" text="Close">
+      <Size x="120" y="20"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset>
+            <AbsDimension x="0" y="-55"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+      <NormalFont style="GameFontNormal"/>
+      <PushedFont style="GameFontNormal"/>
+      <HighlightFont style="GameFontHighlight"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture style="UIPanelButtonUpTexture"/>
+      <NormalTexture inherits="UIPanelButtonUpTexture"/>
+      <PushedTexture inherits="UIPanelButtonDownTexture"/>
+      <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+      <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+      <Scripts>
+        <OnClick>
+          ClassHelper_FindAndReplaceFrame:Hide()
+        </OnClick>
+      </Scripts>
+    </Button>
+  </Frames>
+  <Layers>
+    <Layer level="OVERLAY">
+      
+    </Layer>
+  </Layers>
+  <Scripts>
+    <OnLoad>
+      ClassHelper_FindAndReplaceFrame:Hide()
+      ClassHelper_FindAndReplaceFrame:SetFrameStrata("TOOLTIP")
+      ClassHelper_FindAndReplaceFrame:SetFrameLevel(10000)
+    </OnLoad>
+    <OnShow>
+      ClassHelper_InsertFindAndReplace_FindBox:SetText("FIND")
+      ClassHelper_InsertFindAndReplace_ReplaceBox:SetText("REPLACE")
+    </OnShow>
+  </Scripts>
+</Frame>
+</Ui>
