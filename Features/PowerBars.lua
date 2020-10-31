@@ -174,6 +174,12 @@ function ClassHelper:NewPowerBar(powerType) -- Power bars NO LONGER SAVE. They M
         self.display="NUMBER"
         return self
     end
+    function obj:LightUp()
+        ActionButton_ShowOverlayGlow(powerbar)
+    end
+    function obj:UnLightUp()
+        ActionButton_HideOverlayGlow(powerbar)
+    end
     function obj:SetSize(length,height)
         if length then
             self.length=length

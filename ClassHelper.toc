@@ -30,6 +30,7 @@ Features\ModCreator\Find_and_replace.xml
 Features\ModCreator\New_mod_screen.xml
 Features\ModCreator\Loader.lua
 Features\ModCreator\Panel.lua
+Features\WarningTexts.lua
 
 # Settings
 Settings\GeneralOptions.lua
