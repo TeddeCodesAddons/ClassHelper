@@ -123,6 +123,9 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         end
         return self
     end
+    function textObj:IsShaking()
+        return isShaking
+    end
     function textObj:Hide()
         t1:Hide()
         t2:Hide()

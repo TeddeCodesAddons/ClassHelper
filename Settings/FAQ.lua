@@ -61,9 +61,8 @@ In this case, you could just create a new bar if it doesn't exist anymore, or yo
 Reserved bars never get deleted, so watch out how many you create! (Normal bars show below reserved bars)]],200)
 newFAQ("What is a warning text?",[[Warning texts, unlike the AlertSystem:ShowText() function, are created permanently by mods, can be moved anywhere on the screen, and can shake, flash, change color and size.
 This is more useful if you want to announce a proc without having it override what is currently being shown by AlertSystem.]],200)
+newFAQ("My nameplates broke.",[[Nameplates are difficult to use. Since the NamePlates.lua script was tested many times, it is likely you made a mistake while creating your own script. You can copy straight from the example, and change it to match your class. That's the whole reason it was included!]],200)
 newFAQ("What can ClassHelper do?",[[If this AddOn is seemingly useless, try using it on a healer, as the raidframes feature is very useful. If your class uses power of any type, try adding power bars on your screen. (Warlocks, Druids, Paladins, ... all use power of some type)
 Also, this addon can do just about anything you tell it to do! The code you put in the editor is run with RunScript(), so you can even make your own addons in there, and this addon will automatically load them on demand! (No .toc file required)]],200)
 newFAQ("I don't know how to code",[[In case you don't know how to code, I am working on mods for all classes. If you want a mod for specifically your class, simply ask me on
 |cffff6600https://github.com/TeddeCodesAddons/ClassHelper]],200)
-newFAQ("\124cffffffffWhat's coming next?",[[The next feature that will be introcuded is nameplate editing. There will be a feature allowing you to add icons and text to enemy nameplates.
-EX: If you make a warning text, you may want it to be on a nameplate instead, especially if the ability/proc only affects a specific target.]],200)

@@ -27,9 +27,17 @@ end
 ClassHelper:CreateSlashCommand("debug","ClassHelper:DebugNextSpell()","Gets the spell ID of all the spells, auras, and anything else you use in the next 3 seconds.")
 local panel=ClassHelper:NewUIPanel("API")
 local scroll=CreateFrame("ScrollFrame",nil,panel,"UIPanelScrollFrameTemplate")
-scroll:SetSize(450,450)
-scroll:SetPoint("BOTTOMRIGHT",-50,20)
-local editor=CreateFrame("EditBox",nil,scroll)
+scroll:SetSize(775,670)
+scroll:SetPoint("RIGHT",-25,0)
+local panel2=CreateFrame("FRAME",nil,panel)
+panel2:SetSize(775,670)
+panel2:SetPoint("RIGHT",panel,"RIGHT",0,0)
+scroll:SetScrollChild(panel2)
+local scroll2=CreateFrame("ScrollFrame",nil,panel,"UIPanelScrollFrameTemplate")
+scroll2:SetSize(450,450)
+scroll2:SetPoint("BOTTOMRIGHT",-50,20)
+scroll2:SetFrameLevel(500)
+local editor=CreateFrame("EditBox",nil,scroll2)
 editor:SetSize(450,450)
 editor:SetMultiLine(true)
 editor:SetAutoFocus(false)
@@ -43,7 +51,7 @@ local editorTexture=panel:CreateTexture(nil,"ARTWORK")
 editorTexture:SetColorTexture(0.05,0.05,0.05,0.8)
 editorTexture:SetSize(460,460)
 editorTexture:SetPoint("BOTTOMRIGHT",-50,20)
-scroll:SetScrollChild(editor)
+scroll2:SetScrollChild(editor)
 local desc=panel:CreateFontString(nil,"ARTWORK","GameFontNormal")
 desc:SetText("Select a command to view it's description.")
 desc:SetPoint("TOPLEFT",280,-15)
@@ -52,7 +60,7 @@ desc:SetWidth(500)
 local lastPos=0
 local lastButton
 local function newCmd(commandName,syntax,description,width,header)
-    local button=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
+    local button=CreateFrame("Button",nil,panel2,"UIPanelButtonTemplate")
     button:SetText(commandName)
     if width then
         button:SetWidth(width)
@@ -61,7 +69,7 @@ local function newCmd(commandName,syntax,description,width,header)
     end
     lastPos=lastPos-30
     if header then
-        local head=panel:CreateFontString(nil,"ARTWORK","GameFontNormal")
+        local head=panel2:CreateFontString(nil,"ARTWORK","GameFontNormal")
         head:SetText(header)
         head:SetPoint("TOPLEFT",20,lastPos)
         lastPos=lastPos-30
@@ -119,6 +127,7 @@ warningTextObj=ClassHelper.vars["warningtext1"]
 warningTextObj:SetText("text") -- Sets text
 :SetSize(size)
 :Shake() -- Shakes
+:IsShaking() -- Returns whether the object is shaking or not
 :Flash() -- Flashes white and selected color repeatedly
 :Show() -- Shows the object
 :Hide() -- Hides the object
@@ -193,6 +202,87 @@ ClassHelper.vars["last_timestamp"]=GetTime()
 -- This would not affect the first mod. (Stored in a separate table)]],[[The |cffff6600ClassHelper.vars|r feature allows the user to create local variables.
 These are shared between m.data, m.init, m.unload, and m.reinit, but are not shared by other mods.
 If you want two mods to use the same variable, define it under |cffff6600_G|r (The well-known global table)]],150,"Local variables")
+newCmd("ClassHelper:NewFrameOnNameplate",[[-- data
+local timestamp,subevent,_,_,sourceName,_,_,guid,destName=CombatLogGetCurrentEventInfo()
+local spellId,spellName,spellSchool,amount,overkill,school,resisted,blocked,absorbed,critical,glancing,crushing,isOffHand=select(12,CombatLogGetCurrentEventInfo())
+if sourceName==UnitName("player")then
+    if subevent=="SPELL_AURA_APPLIED"then
+        if spellName=="Reckoning"and destName~=UnitName("player")then
+            ClassHelper.vars["guidreckonings"][guid]=GetTime()
+            local a=ClassHelper:NewFrameOnNameplate(guid,"RETRIBUTION_PALADIN_PVP_RECKONING")
+            if a then
+                if a.f then
+                    a.f:Show()
+                else
+                    local f=a:CreateFontString(nil,"OVERLAY")
+                    f:SetFontObject(GameFontNormal)
+                    f:SetText("Reckoning!")
+                    f:SetPoint("CENTER",0,20)
+                    f:SetTextColor(1,0.5,0,1)
+                    a.f=f
+                end
+            end
+            ClassHelper.vars["guidreckoninghides"][guid]=a.f
+        end
+    elseif subevent=="SPELL_AURA_REMOVED"then
+        if spellName=="Reckoning"and destName~=UnitName("player")then
+            ClassHelper.vars["guidreckonings"][guid]=nil
+            ClassHelper.vars["guidreckoninghides"][guid]:Hide()
+            local a=ClassHelper:NewFrameOnNameplate(guid,"RETRIBUTION_PALADIN_PVP_RECKONING")
+            if a and a.f then
+                a.f:Hide()
+            end
+        end
+    elseif subevent=="SPELL_AURA_REFRESH"then
+        if spellName=="Reckoning"and destName~=UnitName("player")then
+            ClassHelper.vars["guidreckonings"][guid]=timestamp
+        end
+    end
+end
+-- init
+ClassHelper.vars["guidreckonings"]={
+    
+}
+ClassHelper.vars["guidreckoninghides"]={
+    
+}
+ClassHelper.vars["loaded"]=true
+local varsPointer=ClassHelper.vars
+ClassHelper.vars["onloadscript"]=function()C_Timer.NewTicker(0.05,function()
+    if not varsPointer["loaded"]then return end
+    for guid,v in pairs(varsPointer["guidreckonings"])do
+        if v then
+            if GetTime()-v>15 then
+                varsPointer["guidreckonings"][guid]=nil
+                varsPointer["guidreckoninghides"][guid]:Hide()
+                varsPointer["guidreckoninghides"][guid]=nil
+            end
+            local a=ClassHelper:NewFrameOnNameplate(guid,"RETRIBUTION_PALADIN_PVP_RECKONING")
+            if a then
+                if a.f then
+                    a.f:Show()
+                else
+                    local f=a:CreateFontString(nil,"OVERLAY")
+                    f:SetFontObject(GameFontNormal)
+                    f:SetText("Reckoning!")
+                    f:SetPoint("CENTER",0,20)
+                    f:SetTextColor(1,0.5,0,1)
+                    a.f=f
+                end
+            end
+        end
+    end
+end)end
+ClassHelper.vars["onloadscript"]()
+-- unload
+ClassHelper.vars["loaded"]=false
+UNLOAD()
+-- reinit
+ClassHelper.vars["loaded"]=true
+ClassHelper.vars["onloadscript"]()]],[[This feature allows you to create frames on enemy/friendly nameplates. Due to the accuracy of this feature, a GUID must be passed and stored somewhere. You should use |cffff6600ClassHelper.vars|r to store these guids.
+
+
+|cffff6600The code below shows the proper use of the nameplates feature.]],230,"Nameplates")
 local detectFontFrame=CreateFrame("FRAME")
 detectFontFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 detectFontFrame:SetScript("OnEvent",function()

@@ -60,6 +60,14 @@ function ClassHelper:SearchActionBar(id,convertToId)
                         local t,s=GetActionInfo(_G[p..i].action)
                         if t=="spell"and s==id then
                             tinsert(r,p..i)
+                        elseif t=="macro"then
+                            s=GetMacroSpell(s)
+                            if s then
+                                s=select(7,GetSpellInfo(s))
+                                if s and s==id then
+                                    tinsert(r,p..i)
+                                end
+                            end
                         end
                     end
                 end
