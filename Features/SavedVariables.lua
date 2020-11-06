@@ -46,8 +46,17 @@ function ClassHelper:DeleteMod(modName)
         self:Print("Permanently deleted "..modName.." mods. To unload these, type '/reload'. This only needs to be done to unload or update mods.")
     end
 end
+function ClassHelper:DeleteTemplate(modName)
+    if ClassHelper_Data["templates"][modName]then
+        ClassHelper_Data["templates"][modName]=nil
+        self:Print("Permanently deleted the "..modName.." template.")
+    end
+end
 function ClassHelper:LoadModByName(modName)
     return ClassHelper_Data["profiles"][profile]["mods"][modName]
+end
+function ClassHelper:LoadTemplateByName(modName)
+    return ClassHelper_Data["templates"][modName]
 end
 function ClassHelper:LoadModsByCondition(condition)
     local t={
@@ -71,6 +80,34 @@ function ClassHelper:Search(t)
 
     }
     for title,m in pairs(ClassHelper_Data["profiles"][profile]["mods"])do
+        if strfind(strlower(title),strlower(t))then
+            local resultLength=strlen(title)-strlen(t) -- Find the number of letters missed.
+            while idx[resultLength]do -- If index already exists, increase result id.
+                resultLength=resultLength+1
+            end
+            idx[resultLength]=title
+        end
+    end
+    for length,title in pairs(idx)do -- Make an index
+        tinsert(sortTable,length)
+    end
+    sort(sortTable) -- Sort the table
+    for i=1,getn(sortTable)do
+        tinsert(rt,idx[sortTable[i]]) -- Return the values in search order.
+    end
+    return rt -- The results
+end
+function ClassHelper:SearchTemplates(t)
+    local rt={
+
+    }
+    local idx={
+        
+    }
+    local sortTable={
+
+    }
+    for title,m in pairs(ClassHelper_Data["templates"])do
         if strfind(strlower(title),strlower(t))then
             local resultLength=strlen(title)-strlen(t) -- Find the number of letters missed.
             while idx[resultLength]do -- If index already exists, increase result id.
@@ -123,9 +160,23 @@ function ClassHelper:NewMod(modObject)
     ClassHelper_Data["profiles"][profile]["mods"][modObject.title]=modObject
     return true
 end
+function ClassHelper:NewTemplate(modObject)
+    if ClassHelper_Data["templates"][modObject.title]then
+        return false
+    end
+    ClassHelper_Data["templates"][modObject.title]=modObject
+    return true
+end
 function ClassHelper:UpdateMod(modObject)
     if ClassHelper_Data["profiles"][profile]["mods"][modObject.title]then
         ClassHelper_Data["profiles"][profile]["mods"][modObject.title]=modObject
+        return true
+    end
+    return false
+end
+function ClassHelper:UpdateTemplate(modObject)
+    if ClassHelper_Data["templates"][modObject.title]then
+        ClassHelper_Data["templates"][modObject.title]=modObject
         return true
     end
     return false
@@ -139,7 +190,8 @@ function ClassHelper:NewBackup()
     end
     ClassHelper_Data["backups"][d]={
         ["profiles"]=ClassHelper_Data["profiles"],
-        ["saved_profiles"]=ClassHelper_Data["saved_profiles"]
+        ["saved_profiles"]=ClassHelper_Data["saved_profiles"],
+        ["templates"]=ClassHelper_Data["templates"]
     }
     self:Print("Backup created: "..d)
 end
@@ -149,6 +201,7 @@ function ClassHelper:RestoreBackup(backupName)
         self:NewBackup()
         ClassHelper_Data["profiles"]=ClassHelper_Data["backups"][backupName]["profiles"]
         ClassHelper_Data["saved_profiles"]=ClassHelper_Data["backups"][backupName]["saved_profiles"]
+        ClassHelper_Data["templates"]=ClassHelper_Data["backups"][backupName]["templates"]
         self:Print("Restored old backup: "..backupName)
         self:Print("Another backup was also created so you can restore it in case you need your old data back.")
     else
@@ -299,6 +352,9 @@ local function handle(self,event,...)
             },
             ["backups"]={
 
+            },
+            ["templates"]={
+                
             }
         }
         ClassHelper:Print("Welcome to ClassHelper!")
@@ -330,6 +386,11 @@ local function handle(self,event,...)
         ClassHelper_Data["profiles"][profile]["mods"]=firstrun_mods
         ClassHelper:Print("Imported mods to your current profile: "..profile..". (If any mod packages were included)")
         ClassHelper:Print("\124cffff0000If you did not include any mods, you must refer to the API to code your own mods.")
+    end
+    if not ClassHelper_Data["templates"]then
+        ClassHelper_Data["templates"]={
+
+        }
     end
 end
 f:SetScript("OnEvent",handle)

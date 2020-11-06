@@ -51,7 +51,7 @@ function ClassHelper:GetNameplate(guid)
                 end
             else
                 function f:IsRunningHideFunc()
-                    return true
+                    return false
                 end
                 f:Hide()
             end

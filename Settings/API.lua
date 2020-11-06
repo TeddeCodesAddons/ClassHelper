@@ -282,7 +282,9 @@ ClassHelper.vars["loaded"]=true
 ClassHelper.vars["onloadscript"]()]],[[This feature allows you to create frames on enemy/friendly nameplates. Due to the accuracy of this feature, a GUID must be passed and stored somewhere. You should use |cffff6600ClassHelper.vars|r to store these guids.
 
 
-|cffff6600The code below shows the proper use of the nameplates feature.]],230,"Nameplates")
+|cffff6600The code below shows the proper use of the nameplates feature.
+
+|rYou will need data in all four sections of the mod to use the nameplates feature! Watch for comments that say '-- init' and put the code below in init instead of data!]],230,"Nameplates")
 local detectFontFrame=CreateFrame("FRAME")
 detectFontFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 detectFontFrame:SetScript("OnEvent",function()

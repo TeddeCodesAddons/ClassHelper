@@ -1,7 +1,7 @@
 ## Interface: 90001
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
-## Version: 9.0.2
+## Version: 9.0.4
 ## SavedVariables: ClassHelper_Data
 ## LoadOnDemand: 0
 # Core
@@ -28,9 +28,12 @@ Features\NamePlates.lua
 
 # Mod loader
 Features\ModCreator\Find_and_replace.xml
+Features\ModCreator\Find_and_replace_template.xml
 Features\ModCreator\New_mod_screen.xml
+Features\ModCreator\New_template_screen.xml
 Features\ModCreator\Loader.lua
 Features\ModCreator\Panel.lua
+Features\ModCreator\Templates.lua
 Features\WarningTexts.lua
 
 # Settings
@@ -38,3 +41,6 @@ Settings\GeneralOptions.lua
 Settings\API.lua
 Settings\FAQ.lua
 Settings\Profiles.lua
+
+# Mods
+Mods\BasicPackage1\Mods.lua
