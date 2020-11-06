@@ -17,7 +17,7 @@ function ClassHelper:NewFrameOnNameplate(guid,frameID)
     local c={np:GetChildren()}
     if c then
         for _,v in pairs(c)do
-            if v.CH_fid and v.CH_fid()==frameId then
+            if v.CH_fid and v:CH_fid()==frameId then
                 return v
             end
         end
@@ -34,7 +34,9 @@ function ClassHelper:GetNameplate(guid)
         for i=1,getn(v)do
             if v[i]and v[i].GetGUID and v[i]:GetGUID()==guid then
                 v[i]:Show()
-                v[i]:HideFunc()
+                if not v[i]:IsRunningHideFunc()then
+                    v[i]:HideFunc()
+                end
                 return v[i]
             end
         end
@@ -44,7 +46,13 @@ function ClassHelper:GetNameplate(guid)
         local function hideFunc()
             if names[guid]and names[guid].UnitFrame and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)==guid then
                 C_Timer.NewTimer(0.02,hideFunc)
+                function f:IsRunningHideFunc()
+                    return true
+                end
             else
+                function f:IsRunningHideFunc()
+                    return true
+                end
                 f:Hide()
             end
         end

@@ -235,7 +235,7 @@ if sourceName==UnitName("player")then
         end
     elseif subevent=="SPELL_AURA_REFRESH"then
         if spellName=="Reckoning"and destName~=UnitName("player")then
-            ClassHelper.vars["guidreckonings"][guid]=timestamp
+            ClassHelper.vars["guidreckonings"][guid]=GetTime()
         end
     end
 end
