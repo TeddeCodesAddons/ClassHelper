@@ -34,7 +34,11 @@ function ClassHelper:GetNameplate(guid)
         for i=1,getn(v)do
             if v[i]and v[i].GetGUID and v[i]:GetGUID()==guid then
                 v[i]:Show()
-                if not v[i]:IsRunningHideFunc()then
+                if v[i] and v[i].IsRunningHideFunc then
+                    if not v[i]:IsRunningHideFunc()then
+                        v[i]:HideFunc()
+                    end
+                else
                     v[i]:HideFunc()
                 end
                 return v[i]

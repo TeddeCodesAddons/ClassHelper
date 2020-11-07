@@ -138,7 +138,7 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         end
         if isFlashing then
             t2:Show()
-            C_Timer.NewTimer(0.02,updateFlash)
+            C_Timer.NewTimer(0.02,function()updateFlash(0,5)end)
         end
         return self
     end
