@@ -8,6 +8,22 @@ local modvars={ -- New feature, allows mods to have their own environment, rathe
 
 }
 local spec_msg_displayed=false
+ClassHelper.ERROR_TRACKING_ENABLED=false
+function ClassHelper:EnableErrorTracking(enabled)
+    if enabled==1 then
+        self.ERROR_TRACKING_ENABLED=true
+    elseif enabled==0 then
+        self.ERROR_TRACKING_ENABLED=false
+    else
+        self.ERROR_TRACKING_ENABLED=not self.ERROR_TRACKING_ENABLED
+    end
+    if self.ERROR_TRACKING_ENABLED then
+        self:Print("Error tracking: \124cff00ff00ON")
+    else
+        self:Print("Error tracking: \124cffff0000OFF")
+    end
+end
+ClassHelper:CreateSlashCommand("errors","ClassHelper:EnableErrorTracking(ClassHelper:TextToBool(arguments))","Enables and disables error tracking.",{"If one of your mods contains an error, it will be printed in chat."})
 function ClassHelper:LoadAllCurrentMods()
     local class=UnitClass("player")
     local specId=""
@@ -71,9 +87,29 @@ function ClassHelper:LoadAllCurrentMods()
                         end
                         if strlower(self.load)=="custom"then
                             if self.firstrun then
-                                RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.init)
+                                if ClassHelper.ERROR_TRACKING_ENABLED then
+                                    local errorHandler=geterrorhandler()
+                                    local function printError(...)
+                                        print("\124cffff6600ClassHelper:",self.title,"mods (init) \124cffff0000ERROR:\124cffffffff",...)
+                                    end
+                                    seterrorhandler(printError)
+                                    RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.init)
+                                    seterrorhandler(errorHandler)
+                                else
+                                    RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.init)
+                                end
                             else
-                                RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.reinit)
+                                if ClassHelper.ERROR_TRACKING_ENABLED then
+                                    local errorHandler=geterrorhandler()
+                                    local function printError(...)
+                                        print("\124cffff6600ClassHelper:",self.title,"mods (reinit) \124cffff0000ERROR:\124cffffffff",...)
+                                    end
+                                    seterrorhandler(printError)
+                                    RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.reinit)
+                                    seterrorhandler(errorHandler)
+                                else
+                                    RunScript("ClassHelper.system_loadMod=false local function LOAD()ClassHelper.system_loadMod=true end;"..self.reinit)
+                                end
                             end
                             if ClassHelper.system_loadMod then
                                 self.loaded=true
@@ -86,9 +122,29 @@ function ClassHelper:LoadAllCurrentMods()
                         else
                             if self.firstrun then
                                 self.firstrun=false
-                                RunScript(self.init)
+                                if ClassHelper.ERROR_TRACKING_ENABLED then
+                                    local errorHandler=geterrorhandler()
+                                    local function printError(...)
+                                        print("\124cffff6600ClassHelper:",self.title,"mods (init) \124cffff0000ERROR:\124cffffffff",...)
+                                    end
+                                    seterrorhandler(printError)
+                                    RunScript(self.init)
+                                    seterrorhandler(errorHandler)
+                                else
+                                    RunScript(self.init)
+                                end
                             else
-                                RunScript(self.reinit)
+                                if ClassHelper.ERROR_TRACKING_ENABLED then
+                                    local errorHandler=geterrorhandler()
+                                    local function printError(...)
+                                        print("\124cffff6600ClassHelper:",self.title,"mods (reinit) \124cffff0000ERROR:\124cffffffff",...)
+                                    end
+                                    seterrorhandler(printError)
+                                    RunScript(self.reinit)
+                                    seterrorhandler(errorHandler)
+                                else
+                                    RunScript(self.reinit)
+                                end
                             end
                             self.loaded=true
                         end
@@ -98,14 +154,34 @@ function ClassHelper:LoadAllCurrentMods()
                 function modObject:Run()
                     ClassHelper.vars=modvars[self.title]
                     if self.loaded and self.loadable then
-                        RunScript(self.data)
+                        if ClassHelper.ERROR_TRACKING_ENABLED then
+                            local errorHandler=geterrorhandler()
+                            local function printError(...)
+                                print("\124cffff6600ClassHelper:",self.title,"mods (data) \124cffff0000ERROR:\124cffffffff",...)
+                            end
+                            seterrorhandler(printError)
+                            RunScript(self.data)
+                            seterrorhandler(errorHandler)
+                        else
+                            RunScript(self.data)
+                        end
                     end
                     modvars[self.title]=ClassHelper.vars
                 end
                 function modObject:Unload()
                     ClassHelper.vars=modvars[self.title]
                     if self.loaded and self.unload~=""then
-                        RunScript("ClassHelper.system_unloadMod=false local function UNLOAD()ClassHelper.system_unloadMod=true end;"..self.unload)
+                        if ClassHelper.ERROR_TRACKING_ENABLED then
+                            local errorHandler=geterrorhandler()
+                            local function printError(...)
+                                print("\124cffff6600ClassHelper:",self.title,"mods (unload) \124cffff0000ERROR:\124cffffffff",...)
+                            end
+                            seterrorhandler(printError)
+                            RunScript("ClassHelper.system_unloadMod=false local function UNLOAD()ClassHelper.system_unloadMod=true end;"..self.unload)
+                            seterrorhandler(errorHandler)
+                        else
+                            RunScript("ClassHelper.system_unloadMod=false local function UNLOAD()ClassHelper.system_unloadMod=true end;"..self.unload)
+                        end
                         if ClassHelper.system_unloadMod then
                             self.loaded=false
                         end

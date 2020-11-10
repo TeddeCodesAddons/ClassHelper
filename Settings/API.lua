@@ -248,7 +248,7 @@ ClassHelper.vars["guidreckoninghides"]={
 }
 ClassHelper.vars["loaded"]=true
 local varsPointer=ClassHelper.vars
-ClassHelper.vars["onloadscript"]=function()C_Timer.NewTicker(0.05,function()
+C_Timer.NewTicker(0.05,function()
     if not varsPointer["loaded"]then return end
     for guid,v in pairs(varsPointer["guidreckonings"])do
         if v then
@@ -272,14 +272,12 @@ ClassHelper.vars["onloadscript"]=function()C_Timer.NewTicker(0.05,function()
             end
         end
     end
-end)end
-ClassHelper.vars["onloadscript"]()
+end)
 -- unload
 ClassHelper.vars["loaded"]=false
 UNLOAD()
 -- reinit
-ClassHelper.vars["loaded"]=true
-ClassHelper.vars["onloadscript"]()]],[[This feature allows you to create frames on enemy/friendly nameplates. Due to the accuracy of this feature, a GUID must be passed and stored somewhere. You should use |cffff6600ClassHelper.vars|r to store these guids.
+ClassHelper.vars["loaded"]=true]],[[This feature allows you to create frames on enemy/friendly nameplates. Due to the accuracy of this feature, a GUID must be passed and stored somewhere. You should use |cffff6600ClassHelper.vars|r to store these guids.
 
 
 |cffff6600The code below shows the proper use of the nameplates feature.
