@@ -163,7 +163,13 @@ local function createBar()
                 barObject:ChangeTime(GetTime()-barObject.last_update,false)
             elseif barObject.last_update>barObject.start_time then
                 local _time,CD=GetSpellCooldown(barObject.cooldown)
-                barObject:ChangeTime(CD-(GetTime()-_time),true)
+                local gcd_time,GCD=GetSpellCooldown(61304) -- Global cooldown
+                if GCD-(GetTime()-gcd_time)~=CD-(GetTime()-_time)then
+                    barObject:ChangeTime(CD-(GetTime()-_time),true)
+                else -- If on global then tick down to 0 and expire.
+                    barObject:ChangeTime(GetTime()-barObject.last_update,false)
+                    barObject.cooldown=-1
+                end
             end
             barObject.last_update=GetTime()
             local et=barObject.end_time-barObject.current_time

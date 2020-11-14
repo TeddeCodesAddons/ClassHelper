@@ -104,7 +104,7 @@ ClassHelper.vars["my reserved bar"]=bar
 bar:SetReserved(true)]],[[If you want to always have the same bar available for using for one thing, you may want to make a reserved bar.
 This is in case your bar expires, and is marked as free memory. Another mod could then use this bar, and mark it as used. When your mod tries to reference this bar again, it will override the old bar, and hide it permanently.
 To fix this, use bar:SetReserved(true), and if you don't want to use it anymore, use bar:SetReserved(false)]],150)
-newCmd("ClassHelper:PlayWarningSound",[[ClassHelper:PlayWarningSound("sound name")]],[[Plays a sound. Available sounds are:
+newCmd("ClassHelper:PlayWarningSound",[[ClassHelper:PlayWarningSound("sound name",channel,countdownVoice)]],[[Plays a sound. Available sounds are:
 airhorn
 warning
 important
@@ -112,7 +112,12 @@ reminder
 countdown:X (X must be 10 or less, and has a small delay if greater than 5)
 any in-game sound (using PlaySound)
 any sound file (using PlaySoundFile)
-To play a voice coundown, instead use ClassHelper:VoiceCountdown(X) where X is your countdown.]],200)
+To play a voice countdown, instead use ClassHelper:VoiceCountdown(X) where X is your countdown.
+If you want to play a countdown number in a different voice, specify a voice under countdownVoice. (See ClassHelper:VoiceCountdown for more info)]],200)
+newCmd("ClassHelper:VoiceCountdown",[[ClassHelper:VoiceCountdown(countdown,channel,voice)]],[[Creates a countdown using the specified voice in the sound channel.
+If no channel is specified, default is 'master'.
+If no voice is specified, default is 'Corsica'.
+|cffff6600Current supported voices are: Corsica, Koltrane, Smooth.]],200)
 newCmd("AlertSystem:ShowText",[[AlertSystem:ShowText("text",hideChat)]],[[Displays warning text. Colors are supported in this format:
 \124cffff0000 - Red
 \124cffff6600 - Orange (Default)
@@ -175,6 +180,8 @@ newCmd("ClassHelper:ColorPartyRaidFrame",[[ClassHelper:ColorPartyRaidFrame(unitN
 ]],210,"Raidframes")
 newCmd("ClassHelper:LightUpSpell",[[ClassHelper:LightUpSpell("spellName"or spellId)]],"Lights up the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",175,"Action buttons")
 newCmd("ClassHelper:UnLightUpSpell",[[ClassHelper:UnLightUpSpell("spellName"or spellId)]],"Disables lighting on the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",200)
+newCmd("ClassHelper:FlashSpell",[[ClassHelper:FlashSpell("spellName"or spellId)
+-- Try me! '/run ClassHelper:FlashSpell("Regrowth")']],"Flashes a spell on your action bar. This is a new animation, much less visible and only happens once. Affects all instanced of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",175)
 newCmd("<Mod loading conditions>",[[-- If using CUSTOM, use something like this to load your mod.
 if not (CONDITION_TO_LOAD) then return end LOAD()
 -- This will only load the mod if CONDITION_TO_LOAD is true.]],[[|cffff6600This information goes in the 'Conditions' box. (Above the editor box)|r
@@ -283,6 +290,40 @@ ClassHelper.vars["loaded"]=true]],[[This feature allows you to create frames on 
 |cffff6600The code below shows the proper use of the nameplates feature.
 
 |rYou will need data in all four sections of the mod to use the nameplates feature! Watch for comments that say '-- init' and put the code below in init instead of data!]],230,"Nameplates")
+newCmd("C_Timer.NewTimer",[[-- C_Timer.NewTimer(seconds,func)
+C_Timer.NewTimer(1,function()print("1 second delay!")end)]],[[C_Timer is used for scheduling events in WoW.
+To use this, simply type '|cffff6600/run C_Timer.NewTimer(1,function()print("1 second delay!")end)|r'.
+This should print "|cffffffff1 second delay!|r" in chat, after 1 second. You can change this statement from here.
+Changing 1 to 5 would make the delay 5 seconds instead of 1. The code you insert must be put inside |cffff6600function()|r<code here>|cffff6600end|r or it won't run. (It will run immediately, and input its return value into C_Timer.NewTimer)
+This is a common mistake, so try to avoid it and don't type 'C_Timer.NewTimer(1,print("1 second delay"))', as this will not only generate a bug, but 99% of the time a LUA error will fire as well.]],170,"Basic utility")
+newCmd("GetTime",[[local t=GetTime()]],[[GetTime() returns the current time in the local system.
+|cffff0000COMMON ERRORS: This is NOT the same as 'timestamp' returned by COMBAT_LOG_EVENT_UNFILTERED.
+|cffff6600Make sure to use GetTime() instead of timestamp in that situation, unless you are using timestamp as a reference.]],80)
+newCmd("SendChatMessage",[[-- SendChatMessage("text","channel","language","recipient")
+if IsInInstance()then
+    SendChatMessage("My addon sent this!")
+end]],[[This sends a message if you are in an instance saying |cffffffffMy addon sent this!|r
+This can be very useful if you want to call out abilities, but sadly for spam reasons can only be used inside an instance unless you are sending through the PARTY channel, or the WHISPER channel.
+The recipient is used in WHISPER to tell the addon who to send the message to. When using language, usually just set it to nil, unless you want to chat in a specific language.]],150)
+newCmd("GetSpellCooldown",[[local _time,CD=GetSpellCooldown(spellId)]],[[This gets a spell's current cooldown. This command isn't really necessary since ClassHelper will automatically increase a bar's maximum time if the cooldown recovery rate gets reduced so the cooldown is above the number you typed in.
+However, this only accepts spell IDs, and for identity confusion reasons. If you want to use spellName to filter it, simply use the predefined spellId variable from |cffff6600CombatLogGetCurrentEventInfo()|r.]],150)
+newCmd("UnitName",[[local name,realm=UnitName("target")
+name=name.."-"..realm
+if name==sourceName then
+    print("The source was your target!")
+end]],[[UnitName returns the unit's name. Not much else to say. Accepted units and be found on the WoW API.
+A basic list of some of them are:
+"player" -- you
+"target" -- your target
+"focus" -- your focus
+"party1" -- first party member, party2 would be the second, and so on...
+"raid1" -- first raid member, raid2 would be the second, and so on...
+"targettarget" -- the target of your target.
+"focustarget" -- your focus's target.
+"raid10target" -- the target of the 10th raid member.
+"party2target" -- the target of the 2nd party member.
+|cffff0000Remember that this won't return a name like "Name-Realm", it will return "Name","Realm" instead.  |rTo get the realm, use |cffff6600name.."-"..realm|r instead of |cffff6600name|r.
+|cffffffffname=name.."-"..realm|r is often a good way to avoid this. (Shown in the code below)]],100)
 local detectFontFrame=CreateFrame("FRAME")
 detectFontFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 detectFontFrame:SetScript("OnEvent",function()
