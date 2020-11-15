@@ -78,6 +78,7 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         return self
     end
     local isFlashing=false
+    local isFlashing2=false
     local function updateFlash(a,inc)
         t2:SetTextColor(1,1,1,a/100)
         if a>=100 then
@@ -87,6 +88,8 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         end
         if t2:IsShown()then
             C_Timer.NewTimer(0.02,function()updateFlash(a+inc,inc)end)
+        else
+            isFlashing2=false
         end
     end
     function textObj:Flash()
@@ -95,6 +98,7 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
             isFlashing=false
         else
             isFlashing=true
+            isFlashing2=true
             t2:Show()
             t2:SetTextColor(1,1,1,0)
             C_Timer.NewTimer(0.02,function()updateFlash(0,5)end)
@@ -136,7 +140,8 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         if isShaking then
             C_Timer.NewTimer(0.02,shake)
         end
-        if isFlashing then
+        if isFlashing and not isFlashing2 then
+            isFlashing2=true
             t2:Show()
             C_Timer.NewTimer(0.02,function()updateFlash(0,5)end)
         end
