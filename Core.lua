@@ -60,7 +60,8 @@ ClassHelper={
             [2]="Fury",
             [3]="Protection"
         }
-    }
+    },
+    ADDON_PATH_NAME="ClassHelper"
 }
 function ClassHelper:TextToBool(toggle)
     toggle=strlower(toggle)

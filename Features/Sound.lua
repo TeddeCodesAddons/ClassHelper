@@ -10,7 +10,7 @@ function ClassHelper:VoiceCountdown(countdown,channel,voice)
     if not channel then channel="master"end
     if math.floor(countdown)==countdown then
         if countdown<11 then
-            PlaySoundFile("Interface/AddOns/ClassHelper/Assets/countdown/"..voice.."/"..countdown..".ogg",channel)
+            PlaySoundFile("Interface/AddOns/"..(ClassHelper.ADDON_PATH_NAME).."/Assets/countdown/"..voice.."/"..countdown..".ogg",channel)
         end
         if countdown>1 then
             C_Timer.NewTimer(1,function()self:VoiceCountdown(countdown-1,channel)end)
@@ -44,7 +44,7 @@ function ClassHelper:PlayWarningSound(soundName,channel,countdownVoice)
             end
             local c=strsub(soundName,11,strlen(soundName))
             if c and tonumber(c)and tonumber(c)<10 and math.floor(tonumber(c))==tonumber(c)then
-                return PlaySoundFile("Interface/AddOns/ClassHelper/Assets/countdown/"..countdownVoice.."/"..c..".ogg",channel)
+                return PlaySoundFile("Interface/AddOns/"..(ClassHelper.ADDON_PATH_NAME).."/Assets/countdown/"..countdownVoice.."/"..c..".ogg",channel)
             else
                 return false
             end

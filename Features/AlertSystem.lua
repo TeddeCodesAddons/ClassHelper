@@ -63,7 +63,7 @@ function AlertSystem:ShowText(alertMsg,hideChat)
     end
 end
 function Airhorn()
-    PlaySoundFile("Interface/AddOns/ClassHelper/Assets/AirHorn.ogg","master")
+    PlaySoundFile("Interface/AddOns/"..(ClassHelper.ADDON_PATH_NAME).."/Assets/AirHorn.ogg","master")
 end
 function AlertSystem:alert_tick()
     for i=1,getn(self.alerts)do

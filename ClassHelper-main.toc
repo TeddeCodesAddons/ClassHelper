@@ -6,6 +6,7 @@
 ## LoadOnDemand: 0
 # Core
 Core.lua
+ChangePath.lua
 
 # Modules
 Modules\Module_Names.lua
