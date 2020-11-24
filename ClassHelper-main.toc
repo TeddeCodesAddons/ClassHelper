@@ -1,4 +1,4 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
 ## Version: 9.0.7
