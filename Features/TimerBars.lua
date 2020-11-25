@@ -168,7 +168,6 @@ local function createBar()
                     barObject:ChangeTime(CD-(GetTime()-_time),true)
                 else -- If on global then tick down to 0 and expire.
                     barObject:ChangeTime(GetTime()-barObject.last_update,false)
-                    barObject.cooldown=-1
                 end
             end
             barObject.last_update=GetTime()
