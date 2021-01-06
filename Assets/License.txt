@@ -1,3 +1,18 @@
+CustomRaidFrames:
+-----------------
+
+The assets 'ABSORB_OVER', 'ASSIST', 'BREZ', 'CURSE', 'DISEASE', 'HEALING_ABSORB', 'HP_BAR', 'IN_INSTANCE', 'LEADER', 'MAGIC', 'MAIN_TANK', 'NOT_READY', 'PHASED', 'POISON', 'READY', 'SHIELD', 'SHIELD_FILL', 'SHIELD_OVER', 'SUMMON_ACCEPTED', 'SUMMON_DECLINED', 'SUMMON_PENDING', 'WAITING' (.blp)
+were taken from the Blizzard UI.
+
+The assets 'DAMAGER', 'HEALER', 'TANK' (.blp) were taken from ElvUI. <No license was found>
+
+The assets 'AGGRO', 'LOWAGGRO', 'SELECTED', 'OFFLINE' were made in MS paint.
+
+
+
+Other Assets:
+-------------
+
 The asset 'monaco.ttf' was downloaded from the internet, and is similar to the one used in Microsoft Visual Studio Code.
 The remaining assets were taken from Deadly Boss Mods.
 

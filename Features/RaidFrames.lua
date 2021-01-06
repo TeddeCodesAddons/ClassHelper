@@ -40,7 +40,7 @@ local function handle()
                                 _G["CompactRaidFrame"..i.."HealthBarBackground"]:SetColorTexture(1,0,0,1) -- Red, needs an aura, <95%, heal this one!
                             end
                         else
-                            _G["CompactRaidFrame"..i.."HealthBarBackground"]:SetColorTexture(0,1,0,1) -- Green, has aura and above 95%. Don't heal this one or it will overheal.
+                            _G["CompactRaidFrame"..i.."HealthBarBackground"]:SetColorTexture(0,0,0,1) -- Green, has aura and above 95%. Don't heal this one or it will overheal.
                         end
                     end
                 end

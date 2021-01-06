@@ -330,6 +330,16 @@ function ClassHelper:ChangeProfile(profileName)
         self:Print("\124cffff0000Invalid profile name!")
     end
 end
+local function new_install()
+    ClassHelper:Print("You have installed a new version of ClassHelper.")
+    ClassHelper:Print("Type '/ch whats-new' to see what's new in v"..(ClassHelper.VERSION.str).."!")
+end
+function ClassHelper:DisplayWhatsNew()
+    self:Print("1. CustomUnitFrames are here!! - These can be disabled in settings if you do not wish to use them.\n\124cffff0000They do not have any sorting options, and are really just a BETA feature, which will be improved later.")
+    self:Print("2. More bug fixes, of course!")
+    self:Print("3. You can make custom attributes for the CustomRaidFrames! (Allows you to click on them and instantly cast a spell, rather than target the unit, similar to HealBot, and other RaidFrame addons) To do this, go to the settings page of the UI.")
+end
+ClassHelper:CreateSlashCommand("whats-new","ClassHelper:DisplayWhatsNew()","Displays what's new in v"..(ClassHelper.VERSION.str)..".")
 local f=CreateFrame("FRAME")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 local function handle(self,event,...)
@@ -391,6 +401,13 @@ local function handle(self,event,...)
         ClassHelper_Data["templates"]={
 
         }
+    end
+    if not ClassHelper_Data["version"]then
+        ClassHelper_Data["version"]=ClassHelper.VERSION
+        new_install()
+    end
+    if ClassHelper_Data["version"].interface~=ClassHelper.VERSION.interface or ClassHelper_Data["version"].update~=ClassHelper.VERSION.update then
+        new_install()
     end
 end
 f:SetScript("OnEvent",handle)

@@ -25,6 +25,9 @@ function ClassHelper:EnableErrorTracking(enabled)
 end
 ClassHelper:CreateSlashCommand("errors","ClassHelper:EnableErrorTracking(ClassHelper:TextToBool(arguments))","Enables and disables error tracking.",{"If one of your mods contains an error, it will be printed in chat."})
 function ClassHelper:LoadAllCurrentMods()
+    if self.ResetCustomRaidFrames then
+        self:ResetCustomRaidFrames()
+    end
     local class=UnitClass("player")
     local specId=""
     local spec=""

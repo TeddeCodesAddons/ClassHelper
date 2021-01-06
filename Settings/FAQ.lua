@@ -63,6 +63,9 @@ newFAQ("What is a warning text?",[[Warning texts, unlike the AlertSystem:ShowTex
 This is more useful if you want to announce a proc without having it override what is currently being shown by AlertSystem.]],200)
 newFAQ("My nameplates broke.",[[Nameplates are difficult to use. Since the NamePlates.lua script was tested many times, it is likely you made a mistake while creating your own script. You can copy straight from the example, and change it to match your class. That's the whole reason it was included!]],200)
 newFAQ("What are templates?",[[Templates allow you to save code for later, even if you don't want to run it. You can also access this in between profiles, so it is extremely useful to transfer mods. Templates do get backed up too, and restored when a backup is restored.]],200)
+newFAQ("|cffff6600What are CustomUnitFrames?",[[CustomUnitFrames are easier to code than blizzard raid frames, and can be used to automatically cast a spell on any mouse button (left click, right click, shift-left click, etc...)
+|cffff6600This is a BETA feature. There is currently no customization options, which will be implemented in a later version of ClassHelper.
+|cffff0000To disable this feature, go to settings, and turn off CustomUnitFrames.]],200)
 newFAQ("What can ClassHelper do?",[[If this AddOn is seemingly useless, try using it on a healer, as the raidframes feature is very useful. If your class uses power of any type, try adding power bars on your screen. (Warlocks, Druids, Paladins, ... all use power of some type)
 Also, this addon can do just about anything you tell it to do! The code you put in the editor is run with RunScript(), so you can even make your own addons in there, and this addon will automatically load them on demand! (No .toc file required)]],200)
 newFAQ("I don't know how to code",[[In case you don't know how to code, I am working on mods for all classes. If you want a mod for specifically your class, simply ask me on

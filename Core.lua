@@ -61,7 +61,12 @@ ClassHelper={
             [3]="Protection"
         }
     },
-    ADDON_PATH_NAME="ClassHelper"
+    ADDON_PATH_NAME="ClassHelper",
+    VERSION={
+        interface=90002,
+        update=8,
+        str="9.0.8"
+    }
 }
 function ClassHelper:TextToBool(toggle)
     toggle=strlower(toggle)

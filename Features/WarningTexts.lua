@@ -93,6 +93,9 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         end
     end
     function textObj:Flash()
+        if not t1:IsShown()then
+            return self
+        end
         if t2:IsShown()then
             t2:Hide()
             isFlashing=false
@@ -129,6 +132,9 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
     end
     function textObj:IsShaking()
         return isShaking
+    end
+    function textObj:IsFlashing()
+        return isFlashing
     end
     function textObj:Hide()
         t1:Hide()

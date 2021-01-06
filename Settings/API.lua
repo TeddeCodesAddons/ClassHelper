@@ -133,6 +133,7 @@ warningTextObj:SetText("text") -- Sets text
 :SetSize(size)
 :Shake() -- Shakes
 :IsShaking() -- Returns whether the object is shaking or not
+:IsFlashing() -- Returns whether the object is flashing or not
 :Flash() -- Flashes white and selected color repeatedly
 :Show() -- Shows the object
 :Hide() -- Hides the object
@@ -178,6 +179,100 @@ newCmd("ClassHelper:ColorPartyRaidFrame",[[ClassHelper:ColorPartyRaidFrame(unitN
 * unitName can be returned from destName in COMBAT_LOG_EVENT_UNFILTERED.
 * If you aren't in a raid, the party frames will be directly colored green or red, reguardless of health.
 ]],210,"Raidframes")
+newCmd("<CustomRaidFrames functions>",[=[-- CustomRaidFrames Glimmer Tracker
+ClassHelper.vars["raidframesfunc"]=function(t)
+    for i=1,getn(t)do
+        local f=t[i]
+        local b=f.auras.buffs
+        local glimmer=false
+        for x=1,getn(b)do
+            if b[x][1]=="Glimmer of Light"then
+                glimmer=true
+            end
+        end
+        if glimmer then
+            f:SetBackgroundColor(0.05,0.05,0.05,0.9)
+        else
+            f:SetBackgroundColor(0.9,0,0,0.9)
+        end
+    end
+end
+ClassHelper:SetCustomRaidFramesUpdateFunction(varsPointer["raidframesfunc"])
+-- SAMPLE RAID FRAMES TABLE
+--[[
+{
+    [1]={
+        auras={
+            buffs={
+                {<buff name>,<buff ID>,<buff duration>,<buff expiration time>},
+                -- and so on...
+            },
+            debuffs={
+                {<debuff name>,<debuff ID>,<debuff duration>,<debuff expiration time>},
+                -- and so on...
+            }
+        },
+        dispellable=true or false,
+        unit="player" or "partyX" or "raidX",
+        health={
+            current=<number>,
+            max=<number>,
+            absorb=<number>,
+            healing_absorb=<number>
+        },
+        colors={
+            health={r,g,b,a},
+            background={r,g,b,a}
+        }
+    },
+    [2]={
+        auras={
+            buffs={
+                {<buff name>,<buff ID>,<buff duration>,<buff expiration time>},
+                -- and so on...
+            },
+            debuffs={
+                {<debuff name>,<debuff ID>,<debuff duration>,<debuff expiration time>},
+                -- and so on...
+            }
+        },
+        dispellable=true or false,
+        unit="player" or "partyX" or "raidX",
+        health={
+            current=<number>,
+            max=<number>,
+            absorb=<number>,
+            healing_absorb=<number>
+        },
+        colors={
+            health={r,g,b,a},
+            background={r,g,b,a}
+        }
+    },
+    -- and so on...
+}
+]]
+-- FUNCTIONS: 
+-- :SetHealthColor(r,g,b,a)
+-- :Glow()
+-- :UnGlow()
+-- :SetBackgroundColor(r,g,b,a)
+-- :Flash(r,g,b,a) -- obj:Flash(nil) removes flashing
+-- :IsGlowing() -- returns true or false
+-- :IsFlashing() -- returns true or false]=],[[FUNCTION SYNTAX: ClassHelper:SetCustomRaidFramesUpdateFunction(func)
+You pass a function as an argument. This function must be cleared on spec swaps. Make sure to define the function under ClassHelper.vars so you can put it in the reinit too. Read the help text and see how the |cffff6600sample table (below)|cffffff00 works for more info on this function.]],210)
+newCmd("ClassHelper:SetRaidFrameGlowFunction",[[ClassHelper:SetRaidFrameGlowFunction(function(t)
+--  for i=1,getn(t)do
+--      local f=t[i]
+--      if f.hp.percent<50 then
+--          if not f:IsGlowing()then
+--              f:Glow()
+--          end
+--      else
+--          f:UnGlow()
+--      end
+--  end
+end)]],[[Will set the raid frames glow function. nil will disable this feature. The sample code lights up player raidframes when they have less than 50% of their max health remaining.]],250)
 newCmd("ClassHelper:LightUpSpell",[[ClassHelper:LightUpSpell("spellName"or spellId)]],"Lights up the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",175,"Action buttons")
 newCmd("ClassHelper:UnLightUpSpell",[[ClassHelper:UnLightUpSpell("spellName"or spellId)]],"Disables lighting on the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",200)
 newCmd("ClassHelper:FlashSpell",[[ClassHelper:FlashSpell("spellName"or spellId)

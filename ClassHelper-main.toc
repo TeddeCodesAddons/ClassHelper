@@ -1,7 +1,7 @@
 ## Interface: 90002
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
-## Version: 9.0.7
+## Version: 9.0.8
 ## SavedVariables: ClassHelper_Data
 ## LoadOnDemand: 0
 # Core
@@ -44,5 +44,6 @@ Settings\API.lua
 Settings\FAQ.lua
 Settings\Profiles.lua
 
-# Mods
-Mods\BasicPackage1\Mods.lua
+# Beta
+Features\RaidFramesGlow.lua
+Features\CustomUnitFrames\UnitFrameObject.lua
