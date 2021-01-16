@@ -39,3 +39,11 @@ luac.out
 *.x86_64
 *.hex
 
+# Beta Features
+/!beta/*
+
+# Mod packages that are incomplete
+/Mods/BasicPackage1/*
+
+# desktop.ini files
+*.ini

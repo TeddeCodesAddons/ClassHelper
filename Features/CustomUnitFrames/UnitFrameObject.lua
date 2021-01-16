@@ -161,7 +161,9 @@ ufcTitle:SetScale(1.5)
 local LOADED_VARS={
     framerate=60, -- 60 fps, can be changed in settings.
     buff_size=10,
-    debuff_size=20
+    debuff_size=20,
+    max_buffs=7,
+    max_debuffs=4
 }
 local rowCounter=0
 local columnCounter=0
@@ -854,7 +856,7 @@ local function newUnitFrame(unit)
 
             }
         }
-        while name and getn(auras)<7 do
+        while name do
             name=UnitAura(u,i,"PLAYER|HELPFUL")
             if name and not isBuffBlacklisted(name)then
                 local _,icon,count,debuffType,duration,expirationTime,source,isStealable,_,spellId=UnitAura(u,i,"PLAYER|HELPFUL")
@@ -868,7 +870,7 @@ local function newUnitFrame(unit)
             i=i+1
         end
         i=1
-        while i<=getn(auras)do
+        while i<=getn(auras)and i<=LOADED_VARS.max_buffs do
             local name,count,icon,expirationTime,duration=unpack(auras[i])
             if buffs[i]then
                 buffs[i]:Show()
@@ -894,7 +896,7 @@ local function newUnitFrame(unit)
         local debuffsApplied={
 
         }
-        while name and getn(auras)<4 do
+        while name do
             name=UnitAura(u,i,"HARMFUL")
             if name and not isDebuffBlacklisted(name)then
                 local _,icon,count,debuffType,duration,expirationTime,source,isStealable,_,spellId=UnitAura(u,i,"HARMFUL")
@@ -928,7 +930,7 @@ local function newUnitFrame(unit)
         registerDebuffs(debuffsApplied)
         self.dispellable=dispellable
         i=1
-        while i<=getn(auras)do
+        while i<=getn(auras)and i<=LOADED_VARS.max_debuffs do
             local name,count,icon,expirationTime,duration=unpack(auras[i])
             if debuffs[i]then
                 debuffs[i]:Show()
@@ -964,12 +966,12 @@ local function newUnitFrame(unit)
     end
     local glowing=false
     function obj:Glow()
-        ActionButton_ShowOverlayGlow(b)
+        ActionButton_ShowOverlayGlow(overlay)
         glowing=true
         return self
     end
     function obj:UnGlow()
-        ActionButton_HideOverlayGlow(b)
+        ActionButton_HideOverlayGlow(overlay)
         glowing=false
         return self
     end

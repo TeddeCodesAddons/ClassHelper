@@ -304,6 +304,23 @@ ClassHelper.vars["last_timestamp"]=GetTime()
 -- This would not affect the first mod. (Stored in a separate table)]],[[The |cffff6600ClassHelper.vars|r feature allows the user to create local variables.
 These are shared between m.data, m.init, m.unload, and m.reinit, but are not shared by other mods.
 If you want two mods to use the same variable, define it under |cffff6600_G|r (The well-known global table)]],150,"Local variables")
+newCmd("\124cffff6600<Mod settings>",[[-- Proper usage of settings (You can use them in these ways)
+yardsText: " yds"
+immuneWarning: "\124cffff0000IMMUNE NOW!"
+framerate: 60
+disableYardsTextWhenOutOfRange: true
+frameParent: UIParent
+-- Initialization code
+warningText:SetText(ClassHelper.vars["immuneWarning"])
+-- To retrieve any of these settings, use ClassHelper.vars["settingName"]
+-- Make sure to put quotes around the setting name.]],[[Settings are put into ClassHelper.vars, but there's a slight twist to the syntax.
+To separate an index from a value, use ':'. Indexes cannot contain ':' in them.
+Indexes CAN contain spaces, and any other characters except for ':'.
+When making text in a setting, make sure to surround it with quotes ("")
+If you want to insert a quote in the text, use \", so it would look like this (Next line)
+|cffff6600saying: "As they always say, \"You learn when you fail\"."|r
+You can insert colors in the text too, by using "\124cffff0000Warning Text :)", which in this case turns the text color red.
+To access these settings, use ClassHelper.vars["index"], and the value will be returned.]],150)
 newCmd("ClassHelper:NewFrameOnNameplate",[[-- data
 local timestamp,subevent,_,_,sourceName,_,_,guid,destName=CombatLogGetCurrentEventInfo()
 local spellId,spellName,spellSchool,amount,overkill,school,resisted,blocked,absorbed,critical,glancing,crushing,isOffHand=select(12,CombatLogGetCurrentEventInfo())

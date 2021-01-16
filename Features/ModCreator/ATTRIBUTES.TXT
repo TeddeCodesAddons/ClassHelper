@@ -11,6 +11,10 @@ m.load = the zone the mod loads in.
 m.loadable = whether the mod is enabled or not. when not enabled, cannot load at all.
 m.title = the mod's title.
 
+** NEW ATTRIBUTES **
+m.settings = The mod's settings. (Dumped into ClassHelper.vars on load)
+m.default_settings = The mod's default settings. To reset to these, use the settings editor.
+
 
 ********************
 *LOADING CONDITIONS*

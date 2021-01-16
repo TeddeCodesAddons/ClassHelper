@@ -1,3 +1,13 @@
+StaticPopupDialogs["CH_NEW_PROFILE_RELOAD_UI"]={
+    text="A new profile was created. A reload is required to load the profile.",
+    button1="Reload now",
+    button2="Later",
+    OnAccept=ReloadUI,
+    timeout=0,
+    whileDead=true,
+    hideOnEscape=true,
+    preferredIndex=3
+}
 local profile="Default"
 local firstrun_mods={
 
@@ -304,8 +314,8 @@ function ClassHelper:NewProfile(profileName)
         }
     }
     self:ChangeProfile(profileName)
-    self:Print("A new profile was created. A reload is required to load the profile. Please type '/reload'.")
-    message("A new profile was created. A reload is required to load the profile.\nPlease type '/reload'.")
+    self:Print("A new profile was created. A reload is required to load the profile.")
+    StaticPopup_Show("CH_NEW_PROFILE_RELOAD_UI")
 end
 function ClassHelper:DeleteProfile(profileName)
     if profileName=="Default"then
@@ -335,9 +345,21 @@ local function new_install()
     ClassHelper:Print("Type '/ch whats-new' to see what's new in v"..(ClassHelper.VERSION.str).."!")
 end
 function ClassHelper:DisplayWhatsNew()
-    self:Print("1. CustomUnitFrames are here!! - These can be disabled in settings if you do not wish to use them.\n\124cffff0000They do not have any sorting options, and are really just a BETA feature, which will be improved later.")
-    self:Print("2. More bug fixes, of course!")
-    self:Print("3. You can make custom attributes for the CustomRaidFrames! (Allows you to click on them and instantly cast a spell, rather than target the unit, similar to HealBot, and other RaidFrame addons) To do this, go to the settings page of the UI.")
+    self:Print("1. Mods now have settings, which can be saved locally. When sharing a mod, the default settings are shared. If you change the default settings, they will be shared instead. (You should only do this if you are the mod author)")
+end
+local function make_data_compatible(oldVersion)
+    local ver=oldVersion.update
+    local interface=oldVersion.interface
+    if interface<90002 or(interface==90002 and ver<9)then
+        for i,v in pairs(ClassHelper_Data["profiles"])do
+            for modName,modData in pairs(v["mods"])do
+                if not modData.settings then
+                    modData.settings="" -- Pointers should make this work without ClassHelper_Data["profiles"][i]["mods"][modName]=modData
+                    modData.default_settings=""
+                end
+            end
+        end
+    end
 end
 ClassHelper:CreateSlashCommand("whats-new","ClassHelper:DisplayWhatsNew()","Displays what's new in v"..(ClassHelper.VERSION.str)..".")
 local f=CreateFrame("FRAME")
@@ -407,6 +429,8 @@ local function handle(self,event,...)
         new_install()
     end
     if ClassHelper_Data["version"].interface~=ClassHelper.VERSION.interface or ClassHelper_Data["version"].update~=ClassHelper.VERSION.update then
+        make_data_compatible(ClassHelper_Data["version"])
+        ClassHelper_Data["version"]=ClassHelper.VERSION
         new_install()
     end
 end

@@ -1,3 +1,33 @@
+-- Proper usage of settings
+-- yardsText: " yds"
+-- immuneWarning: "\124cffff0000IMMUNE NOW!"
+-- framerate: 60
+-- disableYardsTextWhenOutOfRange: true
+-- frameParent: UIParent
+local function getSettingsTable(settings)
+    local t={
+        ""
+    }
+    local isIndex=true
+    for i=1,strlen(settings)do
+        if strsub(settings,i,i)==":"and isIndex then
+            tinsert(t,"")
+            isIndex=false
+        elseif strsub(settings,i,i)=="\n"then
+            tinsert(t,"")
+            isIndex=true
+        else
+            t[getn(t)]=t[getn(t)]..strsub(settings,i,i)
+        end
+    end
+    local i=1
+    while i<getn(t)do
+        RunScript("ClassHelper.system_tempVars="..t[i+1]) -- Set to the code output (Not the string of code)
+        ClassHelper.vars[t[i]]=ClassHelper.system_tempVars
+        i=i+2
+    end
+    ClassHelper.system_tempVars=nil -- Never store this value.
+end
 local loaded_mods={
 
 }
@@ -74,7 +104,9 @@ function ClassHelper:LoadAllCurrentMods()
                     loaded=false,
                     load=m.load,
                     loadable=m.loadable,
-                    title=m.title
+                    title=m.title,
+                    settings=m.settings,
+                    default_settings=m.default_settings
                 }
                 function modObject:Load()
                     if self.loadable and not self.loaded then
@@ -87,6 +119,12 @@ function ClassHelper:LoadAllCurrentMods()
                             ClassHelper.vars={
 
                             }
+                        end
+                        if m.default_settings then -- New version? (Just in case author added more settings)
+                            getSettingsTable(m.default_settings)
+                        end
+                        if m.settings then
+                            getSettingsTable(m.settings)
                         end
                         if strlower(self.load)=="custom"then
                             if self.firstrun then

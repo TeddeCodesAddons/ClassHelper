@@ -66,6 +66,7 @@ local function handle(self,event,...)
                     unload="",
                     reinit="",
                     load="",
+                    default_settings="",
                     loadable=nil,
                     transmitting=true,
                     sender=sender,
@@ -131,11 +132,14 @@ local function handle(self,event,...)
 
                     }
                 end
+            elseif p=="A"then
+                recieve[sender].default_settings=recieve[sender].default_settings..t
             end
         end
     end
 end
 f:SetScript("OnEvent",handle)
+local update_mode=false
 function ClassHelper:DownloadModFromSender(sender)
     if recieve[sender].transmitting then
         self:Print("You couldn't download the mod because it was still in transmission. Please wait for it to complete before attempting to download the mod.")
@@ -148,6 +152,7 @@ function ClassHelper:DownloadModFromSender(sender)
     local reinit=recieve[sender].reinit
     local load=recieve[sender].load
     local loadable=recieve[sender].loadable
+    local default_settings=recieve[sender].default_settings
     local m={
         title=title,
         data=data,
@@ -155,15 +160,38 @@ function ClassHelper:DownloadModFromSender(sender)
         unload=unload,
         reinit=reinit,
         load=load,
-        loadable=loadable
+        loadable=loadable,
+        settings=default_settings,
+        default_settings=default_settings
     }
     local x=ClassHelper:NewMod(m)
     if x then
         self:Print("Mod downloaded successfully! (Saved as "..title..")")
+    elseif update_mode then
+        self:Print("The mod you attempted to download already exists, but update mode is enabled. The mod will now be overwritten. (Your settings will stay the same)")
+        local your_settings=ClassHelper:LoadModByName(m.title)
+        if not your_settings then
+            your_settings={
+                
+            }
+        end
+        your_settings=your_settings.settings or default_settings
+        m.settings=your_settings
+        ClassHelper:UpdateMod(m)
     else
-        self:Print("You couldn't download the mod because you already have a mod with the same name. Please delete that mod before attempting to download the new mod.")
+        self:Print("You couldn't download the mod because you already have a mod with the same name. Please delete that mod before attempting to download the new mod. If you are updating the mod, type '/ch set-update-mode 1'.")
     end
 end
+function ClassHelper:SetUpdateMode(a)
+    if a=="1"then
+        update_mode=true
+        self:Print("You enabled update mode! (Downloading a mod will that already exists will now overwrite the previous mod, but will keep settings. Only do this if you are trying to update a mod)")
+    else
+        update_mode=false
+        self:Print("You disabled update mode! (Downlaoding a mod that already exists will now fail like normal)")
+    end
+end
+ClassHelper:CreateSlashCommand("set-update-mode","ClassHelper:SetUpdateMode(arguments)","Sets the update mode to 1 or 0. If set to 1, when you attempt to download a mod that already exists, you will update that mod instead.")
 function ClassHelper:ShareMod(modObject,channel,recipient)
     ch=channel
     rec=recipient
@@ -222,6 +250,14 @@ function ClassHelper:ShareMod(modObject,channel,recipient)
         i=i+254
     end
     s(data)
+    i=1
+    data=""
+    while i<strlen(modObject.default_settings)do
+        local d="A"..strsub(modObject.default_settings,i,i+253)
+        data=data..d
+        i=i+254
+    end
+    s(data)
     if modObject.loadable then
         s("71",channel,recipient)
     else
@@ -235,7 +271,7 @@ function ClassHelper:Share(modName,channel,recipient)
     self:ShareMod(m,channel,recipient)
 end
 local function init()
-    local panel=ClassHelper:NewUIPanel("Sharing mods")
+    local panel=ClassHelper:NewUIPanel("Sharing Mods")
     local scroll=CreateFrame("ScrollFrame",nil,panel,"UIPanelScrollFrameTemplate")
     scroll:SetSize(775,670)
     scroll:SetPoint("RIGHT",-25,0)

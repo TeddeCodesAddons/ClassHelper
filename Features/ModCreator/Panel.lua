@@ -440,6 +440,7 @@ f:SetScript("OnEvent",function()
     if not entered_world then
         entered_world=true
         ClassHelper:DefaultSavedVariable("ModEditor","SyntaxEnabled","true")
+        ClassHelper:DefaultSavedVariable("ModEditor","TextSize","9")
         if ClassHelper:Load("ModEditor","SyntaxEnabled")=="true"then
             ClassHelper:DefineSyntaxBox(editor,function(self,key)if key=="BACKSPACE"and strsub(self:GetText(),self:GetCursorPosition()-3,self:GetCursorPosition())=="    "then self:HighlightText(self:GetCursorPosition()-4,self:GetCursorPosition())end if key=="S"and(IsLeftControlKeyDown()or IsRightControlKeyDown())then editingMod.load=modConditions:GetText()ClassHelper:SetEditorMode(mode)ClassHelper:UpdateMod(editingMod)ClassHelper:Print("Saved \124cff0066ff"..(editingMod.title).."\124cffffff00 mods. To load the new mods, type '/reload'. This only needs to be done when you edit a mod.")end if key=="F"and(IsLeftControlKeyDown()or IsRightControlKeyDown())then ClassHelper_FindAndReplaceFrame:Show()end end)
         end
