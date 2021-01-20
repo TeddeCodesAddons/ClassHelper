@@ -21,6 +21,7 @@ local function resetToDefaults()
     changesSaved=true
     local m=ClassHelper:LoadModByName(editingTitle)
     editor:SetText(m.default_settings)
+    save()
     ClassHelper:Print("Reset the mod settings to the defaults. If you overwrote the defaults, you will reset to these instead.")
 end
 local function save()
@@ -134,7 +135,7 @@ f:SetScript("OnEvent",function()
         ClassHelper:DefaultSavedVariable("ModEditor","SyntaxEnabled","true")
         ClassHelper:DefaultSavedVariable("ModEditor","TextSize","9")
         if ClassHelper:Load("ModEditor","SyntaxEnabled")=="true"then
-            ClassHelper:DefineSyntaxBox(editor,function(self,key)if key=="BACKSPACE"and strsub(self:GetText(),self:GetCursorPosition()-3,self:GetCursorPosition())=="    "then self:HighlightText(self:GetCursorPosition()-4,self:GetCursorPosition())end if key=="S"and(IsLeftControlKeyDown()or IsRightControlKeyDown())then save()end end)
+            ClassHelper:DefineSyntaxBox(editor,function(self,key)changesSaved=false if key=="BACKSPACE"and strsub(self:GetText(),self:GetCursorPosition()-3,self:GetCursorPosition())=="    "then self:HighlightText(self:GetCursorPosition()-4,self:GetCursorPosition())end if key=="S"and(IsLeftControlKeyDown()or IsRightControlKeyDown())then save()end end)
         end
         editor:SetFont("Interface\\AddOns\\"..(ClassHelper.ADDON_PATH_NAME).."\\Assets\\monaco.ttf",tonumber(ClassHelper:Load("ModEditor","TextSize")))
         if ClassHelper:Load("ModEditor","SyncAcrossAllFrames")=="true"then

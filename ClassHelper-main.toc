@@ -39,6 +39,7 @@ Features\ModCreator\ModSettings.lua
 Features\ModCreator\Templates.lua
 Features\WarningTexts.lua
 Features\Export.lua
+Features\ExportTable.lua
 
 # Settings
 Settings\GeneralOptions.lua

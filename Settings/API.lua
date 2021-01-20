@@ -180,6 +180,7 @@ newCmd("ClassHelper:ColorPartyRaidFrame",[[ClassHelper:ColorPartyRaidFrame(unitN
 * If you aren't in a raid, the party frames will be directly colored green or red, reguardless of health.
 ]],210,"Raidframes")
 newCmd("<CustomRaidFrames functions>",[=[-- CustomRaidFrames Glimmer Tracker
+local varsPointer=ClassHelper.vars
 ClassHelper.vars["raidframesfunc"]=function(t)
     for i=1,getn(t)do
         local f=t[i]

@@ -44,7 +44,11 @@ function ClassHelper:NewIconFrame(parent)
             if d>=10 then
                 d=math.floor(d)
             end
-            t2:SetText(ClassHelper:FormatTime(d))
+            local dur=d
+            if d>=60 then
+                dur=ClassHelper:FormatTime(d)
+            end
+            t2:SetText(dur)
             if d<=5 then
                 t2:SetTextColor(1,0,0,1)
                 t2:SetScale(1.25*(size_/50))
@@ -112,6 +116,30 @@ function ClassHelper:NewIconFrame(parent)
     function obj:UnGlow()
         ActionButton_HideOverlayGlow(cd)
         return self
+    end
+    local isShaking=false
+    local function shake()
+        if not isShaking then return end
+        local x=math.random(-1.5,1.5)
+        local y=math.random(-1.5,1.5)
+        f:SetPoint("CENTER",x,y)
+        t2:SetPoint("CENTER",x,y)
+        debuff:SetPoint("CENTER",x,y)
+        C_Timer.NewTimer(0.02,shake)
+    end
+    function obj:Shake()
+        isShaking=not isShaking
+        if isShaking then
+            C_Timer.NewTimer(0.02,shake)
+        else
+            f:SetPoint("CENTER",0,0)
+            t2:SetPoint("CENTER",0,0)
+            debuff:SetPoint("CENTER",0,0)
+        end
+        return self
+    end
+    function obj:IsShaking()
+        return isShaking
     end
     return obj:Show()
 end

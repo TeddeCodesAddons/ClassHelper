@@ -22,7 +22,10 @@ local function getSettingsTable(settings)
     end
     local i=1
     while i<getn(t)do
+        local errorHandler=geterrorhandler()
+        seterrorhandler(function(...)print("\124cffff0000LUA Error in mod settings:\124r",...)end)
         RunScript("ClassHelper.system_tempVars="..t[i+1]) -- Set to the code output (Not the string of code)
+        seterrorhandler(errorHandler)
         ClassHelper.vars[t[i]]=ClassHelper.system_tempVars
         i=i+2
     end
@@ -120,11 +123,11 @@ function ClassHelper:LoadAllCurrentMods()
 
                             }
                         end
-                        if m.default_settings then -- New version? (Just in case author added more settings)
-                            getSettingsTable(m.default_settings)
+                        if self.default_settings then -- New version? (Just in case author added more settings)
+                            getSettingsTable(self.default_settings)
                         end
-                        if m.settings then
-                            getSettingsTable(m.settings)
+                        if self.settings then
+                            getSettingsTable(self.settings)
                         end
                         if strlower(self.load)=="custom"then
                             if self.firstrun then

@@ -109,16 +109,14 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
         return self
     end
     local isShaking=false
-    local shakeAmount=1
     local function shake()
+        if not isShaking then return end
         local s=t1:GetScale()*100
         local x=math.random(-150,150)/s
         local y=math.random(-150,150)/s
         t1:SetPoint("CENTER",x,y)
         t2:SetPoint("CENTER",x,y)
-        if isShaking and t1:IsShown()then
-            C_Timer.NewTimer(0.02,shake)
-        end
+        C_Timer.NewTimer(0.02,shake)
     end
     function textObj:Shake()
         isShaking=not isShaking
@@ -143,9 +141,6 @@ function ClassHelper:NewWarningText(text,size,maxX,x,y,pt,r,g,b,a)
     end
     function textObj:Show()
         t1:Show()
-        if isShaking then
-            C_Timer.NewTimer(0.02,shake)
-        end
         if isFlashing and not isFlashing2 then
             isFlashing2=true
             t2:Show()

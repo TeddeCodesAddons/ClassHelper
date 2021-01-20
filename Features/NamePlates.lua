@@ -11,7 +11,7 @@ local function getNamePlate(u)
         end
     end
 end
-function ClassHelper:NewFrameOnNameplate(guid,frameID)
+function ClassHelper:NewFrameOnNameplate(guid,frameId)
     local np=self:GetNameplate(guid)
     if not np then return end
     local c={np:GetChildren()}
