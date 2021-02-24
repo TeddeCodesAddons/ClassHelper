@@ -43,7 +43,7 @@ luac.out
 /!beta/*
 
 # Mod packages that are incomplete
-/Mods/BasicPackage1/*
+/Mods/*
 
 # desktop.ini files
 *.ini

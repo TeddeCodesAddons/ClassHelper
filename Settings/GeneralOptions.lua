@@ -18,17 +18,30 @@ local function createSetting(name,toggleText,toggleReturns,appName,settingName,x
     end
     local button=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
     local default=ClassHelper:Load(appName,settingName)
-    local idx=tIndexOf(toggleReturns,default)
-    button:SetText(toggleText[idx])
+    local toggleId=1
+    if toggleReturns then
+        local idx=tIndexOf(toggleReturns,default)
+        button:SetText(toggleText[idx])
+        toggleId=idx
+    else
+        local idx=tIndexOf(toggleText,default)
+        button:SetText(default)
+        if idx then
+            toggleId=idx
+        end
+    end
     button:SetWidth(width)
-    local toggleId=idx
     local function toggleButton()
         toggleId=toggleId+1
         if toggleId>getn(toggleText)then
             toggleId=1
         end
         button:SetText(toggleText[toggleId])
-        ClassHelper:Save(appName,settingName,toggleReturns[toggleId])
+        if toggleReturns then
+            ClassHelper:Save(appName,settingName,toggleReturns[toggleId])
+        else
+            ClassHelper:Save(appName,settingName,toggleText[toggleId])
+        end
         if script then
             script()
         end
@@ -56,6 +69,30 @@ local function handle(self,event,...)
         ClassHelper:DefaultSavedVariable("ModEditor","SyncAcrossAllFrames","true")
         ClassHelper:DefaultSavedVariable("Share","NotificationsEnabled","true")
         ClassHelper:DefaultSavedVariable("Share","MaxBytes",65536) -- 64 KB seems about right for most mods.
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","Framerate","60")
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","DebuffPoint","BOTTOMLEFT")
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","BuffPoint","BOTTOMRIGHT")
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","Showing","true")
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","HideOldFrames","false")
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","Attributes",{
+            ["type1"]="target",
+            ["shift-type1"]="target",
+            ["alt-type1"]="target",
+            ["ctrl-type1"]="target",
+            ["ctrl-shift-type1"]="target",
+            ["alt-shift-type1"]="target",
+            ["alt-ctrl-type1"]="target",
+            ["alt-ctrl-shift-type1"]="target",
+            ["type2"]="togglemenu",
+            ["shift-type2"]="target",
+            ["alt-type2"]="target",
+            ["ctrl-type2"]="target",
+            ["ctrl-shift-type2"]="target",
+            ["alt-shift-type2"]="target",
+            ["alt-ctrl-type2"]="target",
+            ["alt-ctrl-shift-type2"]="target"
+        })
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","Scale",1)
         if ClassHelper:Load("AlertSystem","ShowChat")=="false"then
             AlertSystem.showChat=false
         else
@@ -71,6 +108,7 @@ local function handle(self,event,...)
         createSetting("Sharing mods: Maximum mod size",{"\124cff00ff0064 KB","\124cffffff00256 KB","\124cffff0000Unlimited","\124cffff0000Deny all"},{65536,262144,-1,0},"Share","MaxBytes",20,-580,"TOPLEFT",100,"Changes the maximum download size. (64 KB recommended).\nIf a mod is sent above this size, the request will be declined and the connection will be closed.\nThis is recommended to prevent players from filling up your memory.")
         createSetting("CustomRaidFrames",{"\124cff00ff00Enabled","\124cffff0000Disabled"},{"true","false"},"CustomUnitFrames","Showing",350,-370,"TOPLEFT",100,"Enables and disables ClassHelper CustomRaidFrames and CustomUnitFrames.",function()StaticPopup_Show("CH_CONFIRM_RELOAD_UI")end)
         createSetting("Hide old party and raid frames",{"\124cff00ff00Hide","\124cffff0000Show"},{"true","false"},"CustomUnitFrames","HideOldFrames",375,-410,"TOPLEFT",100,"",function()StaticPopup_Show("CH_CONFIRM_RELOAD_UI")end)
+        createSetting("CustomUnitFrames scale",{0.25,0.5,0.75,1,1.25,1.5},nil,"CustomUnitFrames","Scale",350,-465,"TOPLEFT",100,"Changes the scale of the CustomUnitFrames. To make this more accurate,\nuse '/ch unitframe-scale'.",function()ClassHelper:UpdateUnitFrameScale()end)
         entered_world=true
     end
 end

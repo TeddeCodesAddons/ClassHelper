@@ -4,18 +4,20 @@ function ClassHelper:NewIconFrame(parent)
     cd:SetPoint("CENTER")
     cd:SetSize(50,50)
     cd:SetScale(2)
+    cd:SetFrameLevel(9999) -- Frontmost - 1
     local f=CreateFrame("Cooldown",nil,cd,"CooldownFrameTemplate")
     f:SetDrawEdge(false)
     f:SetSize(50,50)
     f:SetPoint("CENTER")
     f:SetHideCountdownNumbers(true)
-    local t1=cd:CreateFontString(nil,"OVERLAY")
+    f:SetFrameLevel(10000) -- Frontmost
+    local t1=f:CreateFontString(nil,"OVERLAY")
     t1:SetFontObject(GameFontNormal)
     t1:SetPoint("BOTTOMRIGHT",f,"BOTTOMRIGHT",-5,5)
     t1:SetTextColor(1,1,1,1)
     t1:SetText("")
     t1:SetScale(1)
-    local t2=cd:CreateFontString(nil,"OVERLAY")
+    local t2=f:CreateFontString(nil,"OVERLAY")
     t2:SetFontObject(GameFontNormal)
     t2:SetPoint("CENTER",f,"CENTER",0,0)
     t2:SetTextColor(1,1,1,1)
@@ -25,6 +27,11 @@ function ClassHelper:NewIconFrame(parent)
     debuff:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     debuff:SetSize(50,50)
     debuff:SetPoint("CENTER")
+    local border=cd:CreateTexture(nil,"BORDER")
+    border:SetColorTexture(1,0,0,1)
+    border:SetSize(53,53)
+    border:SetPoint("CENTER")
+    border:Hide()
     local size_=50
     local obj={
 
@@ -84,6 +91,9 @@ function ClassHelper:NewIconFrame(parent)
         t2:Hide()
         return self
     end
+    function obj:IsShown()
+        return cd:IsShown()
+    end
     function obj:SetStacks(stacks)
         if stacks>1 then
             t1:SetText(stacks)
@@ -102,6 +112,7 @@ function ClassHelper:NewIconFrame(parent)
         debuff:SetSize(size,size)
         t1:SetScale(size/50)
         t2:SetScale(size/50)
+        border:SetSize(size+3,size+3)
         size_=size
         return self
     end
@@ -123,7 +134,6 @@ function ClassHelper:NewIconFrame(parent)
         local x=math.random(-1.5,1.5)
         local y=math.random(-1.5,1.5)
         f:SetPoint("CENTER",x,y)
-        t2:SetPoint("CENTER",x,y)
         debuff:SetPoint("CENTER",x,y)
         C_Timer.NewTimer(0.02,shake)
     end
@@ -140,6 +150,16 @@ function ClassHelper:NewIconFrame(parent)
     end
     function obj:IsShaking()
         return isShaking
+    end
+    function obj:SetBorder(...)
+        local a=...
+        if not a then
+            border:Hide()
+            return self
+        end
+        border:SetColorTexture(...)
+        border:Show()
+        return self
     end
     return obj:Show()
 end

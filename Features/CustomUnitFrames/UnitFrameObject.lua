@@ -864,8 +864,8 @@ local function newUnitFrame(unit)
                     if not isBuffBlacklisted(spellId)then
                         tinsert(auras,{name,count,icon,expirationTime,duration})
                     end
-                    tinsert(self.auras.buffs,{name,spellId,duration,expirationTime})
                 end
+                tinsert(self.auras.buffs,{name,spellId,duration,expirationTime})
             end
             i=i+1
         end
@@ -1004,6 +1004,9 @@ local onupdate=function()end
 function ClassHelper:SetCustomRaidFramesUpdateFunction(func)
     onupdate=func
 end
+function ClassHelper:GetCustomRaidFramesUpdateFunction()
+    return onupdate
+end
 local f=CreateFrame("FRAME")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 local has_entered_world=false
@@ -1075,6 +1078,7 @@ local function handle()
             ["alt-ctrl-type2"]="target",
             ["alt-ctrl-shift-type2"]="target"
         })
+        ClassHelper:DefaultSavedVariable("CustomUnitFrames","Scale",1)
         LOADED_VARS.framerate=tonumber(ClassHelper:Load("CustomUnitFrames","Framerate"))
         LOADED_VARS.debuffPoint=ClassHelper:Load("CustomUnitFrames","DebuffPoint")
         LOADED_VARS.buffPoint=ClassHelper:Load("CustomUnitFrames","BuffPoint")
@@ -1098,9 +1102,17 @@ local function handle()
                     end
                 end
                 updating=false
+                ClassHelper_UnitFrameContainer:SetScale(ClassHelper:Load("CustomUnitFrames","Scale")/2)
                 ClassHelper:Print("Updated all RaidFrame attributes successfully!")
             end
         end
+        function ClassHelper:UpdateUnitFrameScale(s)
+            if s then
+                self:Save("CustomUnitFrames","Scale",s)
+            end
+            updateFunc(true)
+        end
+        ClassHelper:CreateSlashCommand("unitframe-scale","ClassHelper:UpdateUnitFrameScale(tonumber(arguments))","Changes the CustomUnitFrames scale. Default is 1. Note thatthis will also update any attributes to update the scale.")
         ClassHelper:CreateSlashCommand("unitframe-attribute","ClassHelper:UpdateUnitFrameAttribute(arguments)","Updates a RaidFrame attribute. Type '/ch help unitframe-attribute' for more info. To update, type '/ch unitframe-attribute update'.",{"You can use these as automated ways of casting spells.","To make an automatic spellcast, simply type '/ch unitframe-attribute <clicking_method> macro'. Then type ","/ch unitframe-attribute macrotext <macro_data>","The clicking method can be any of these examples: type1 (left-click = button1); type2 (right-click = button2); shift-type1 (shift+leftclick); alt-ctrl-shift-type2 (ctrl+alt+shift+rightclick); <you can remove any modifiers, add any modifiers, or even use things like type3 for the 3rd mouse button. (middle button)","For more information, please see \124cffff6600https://wowwiki.fandom.com/wiki/SecureActionButtonTemplate \124cffffff00on the SetAttribute() method. What you type in these commands is being put into SetAttribute().","Use '~' for newlines to split lines of text in macros in command lines only. In the UI, you can use newlines."})
         ClassHelper:CreateSlashCommand("unitframe-attributes","ClassHelper:UpdateUnitFrameAttribute(arguments)","Updates a RaidFrame attribute. Type '/ch help unitframe-attribute' for more info. To update, type '/ch unitframe-attribute update'.",{"You can use these as automated ways of casting spells.","To make an automatic spellcast, simply type '/ch unitframe-attribute <clicking_method> macro'. Then type ","/ch unitframe-attribute macrotext <macro_data>","The clicking method can be any of these examples: type1 (left-click = button1); type2 (right-click = button2); shift-type1 (shift+leftclick); alt-ctrl-shift-type2 (ctrl+alt+shift+rightclick); <you can remove any modifiers, add any modifiers, or even use things like type3 for the 3rd mouse button. (middle button)","For more information, please see \124cffff6600https://wowwiki.fandom.com/wiki/SecureActionButtonTemplate \124cffffff00on the SetAttribute() method. What you type in these commands is being put into SetAttribute().","Use '~' for newlines to split lines of text in macros in command lines only. In the UI, you can use newlines."})
         function ClassHelper:UpdateUnitFrameAttribute(t)

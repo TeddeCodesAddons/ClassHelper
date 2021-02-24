@@ -112,6 +112,41 @@ local saveButton=CreateFrame("Button",nil,editorPanel,"UIPanelButtonTemplate")
 saveButton:SetText("Save")
 saveButton:SetWidth(100)
 saveButton:SetPoint("LEFT",175,190)
+local errorText
+local checkButton=CreateFrame("Button",nil,editorPanel,"UIPanelButtonTemplate")
+checkButton:SetText("Error check")
+checkButton:SetWidth(100)
+checkButton:SetPoint("LEFT",50,190)
+checkButton:SetScript("OnClick",function()
+    ClassHelper:SetEditorMode(mode)
+    local data,init,unload,reinit=editingMod.data,editingMod.init,editingMod.unload,editingMod.reinit
+    if data and init and unload and reinit and editingMod.title then
+        local _
+        _,data=loadstring(data,"Data")
+        _,init=loadstring(init,"Init")
+        _,unload=loadstring(unload,"Unload")
+        _,reinit=loadstring(reinit,"Reinit")
+        local errorText2=""
+        if data then
+            errorText2=errorText2.."\n"..data
+        end
+        if init then
+            errorText2=errorText2.."\n"..init
+        end
+        if unload then
+            errorText2=errorText2.."\n"..unload
+        end
+        if reinit then
+            errorText2=errorText2.."\n"..reinit
+        end
+        if not(data or init or unload or reinit)then
+            errorText2="No errors were found."
+        end
+        errorText:SetText((editingMod.title)..": "..errorText2)
+    else
+        ClassHelper:Print("Please select a mod before running an error check.")
+    end
+end)
 local revertButton=CreateFrame("Button",nil,editorPanel,"UIPanelButtonTemplate")
 revertButton:SetText("Revert")
 revertButton:SetWidth(100)
@@ -200,6 +235,23 @@ modSelector:SetPoint("BOTTOMRIGHT",-150,550)
 modSelector:SetFont("Interface\\AddOns\\"..(ClassHelper.ADDON_PATH_NAME).."\\Assets\\monaco.ttf",9)
 modSelector:SetCursorPosition(0)
 modSelector:SetScript("OnEscapePressed",function(self)self:ClearFocus()end)
+local scroll2=CreateFrame("ScrollFrame",nil,editorPanel,"UIPanelScrollFrameTemplate")
+scroll2:SetSize(500,70)
+scroll2:SetPoint("TOPLEFT",40,-20)
+errorText=CreateFrame("EditBox",nil,scroll2)
+errorText:SetSize(500,70)
+errorText:SetAutoFocus(false)
+errorText:SetPoint("TOPLEFT",0,0)
+errorText:SetFont("Interface\\AddOns\\"..(ClassHelper.ADDON_PATH_NAME).."\\Assets\\monaco.ttf",9)
+errorText:SetCursorPosition(0)
+errorText:SetScript("OnEscapePressed",function(self)self:ClearFocus()end)
+errorText:SetMultiLine(true)
+errorTextTexture=editorPanel:CreateTexture(nil,"ARTWORK")
+errorTextTexture:SetColorTexture(0.05,0.05,0.05,0.8)
+errorTextTexture:SetSize(500,70)
+errorTextTexture:SetPoint("TOPLEFT",40,-20)
+scroll2:SetScrollChild(errorText)
+errorText:SetText("Errors in your code will appear here. You can press CTRL+A and CTRL+C to select all and copy the errors.")
 local modAmount=0
 modSelector:SetScript("OnTabPressed",function(self)local m=self:GetText()m=ClassHelper:Search("")if getn(m)==0 then ClassHelper:Print("\124cffff0000You don't have any mods to search for!")return end modAmount=modAmount+1 self:SetText(m[modAmount])ClassHelper:SetupEditor(ClassHelper:LoadModByName(m[modAmount]))if modAmount>=getn(m)then modAmount=0 end end)
 modSelector:SetScript("OnEnterPressed",function(self)local m=self:GetText()m=ClassHelper:Search(m)if getn(m)==0 then ClassHelper:Print("No results were found.")return end self:SetText(m[1])ClassHelper:SetupEditor(ClassHelper:LoadModByName(m[1]))self:ClearFocus()end)
