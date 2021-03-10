@@ -285,9 +285,9 @@ end
 function ClassHelper:InitMod(modName)
     for i=1,getn(loaded_mods)do
         if loaded_mods[i].title==modName then
-            loaded_mods[i].loaded=true
             loaded_mods[i].loadable=true -- Temporarily disabled? Restart.
             loaded_mods[i]:Load()
+            loaded_mods[i].loaded=true
         end
     end
 end

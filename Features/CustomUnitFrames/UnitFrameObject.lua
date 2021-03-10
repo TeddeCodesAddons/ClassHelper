@@ -774,12 +774,15 @@ local function newUnitFrame(unit)
         _healabsorb=_healabsorb/_hpmax
         _hp=_hp/_hpmax
         if _hp>1 then return self end -- Bad render frame (_hp is most likely infinity, divide by 0)
+        obj.dead=UnitIsDeadOrGhost(u)
         if _hp==0 then
             t1:SetText("Dead")
+        elseif obj.dead then
+            t1:SetText("Ghost")
         else
             t1:SetText(math.floor(_hp*100).."%")
         end
-        if UnitIsDeadOrGhost(u)then
+        if obj.dead then
             health:Hide()
             health2:Hide()
         else
@@ -966,8 +969,12 @@ local function newUnitFrame(unit)
     end
     local glowing=false
     function obj:Glow()
-        ActionButton_ShowOverlayGlow(overlay)
-        glowing=true
+        if b:IsShown()then
+            ActionButton_ShowOverlayGlow(overlay)
+            glowing=true
+        else
+            self:UnGlow()
+        end
         return self
     end
     function obj:UnGlow()
