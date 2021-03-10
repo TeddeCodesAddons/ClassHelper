@@ -1,3 +1,4 @@
+if AlertSystem then return end -- Module has already been loaded?
 SLASH_ALERTS1="/alert"
 AlertSystem={
     alerts={

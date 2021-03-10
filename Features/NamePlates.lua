@@ -36,10 +36,14 @@ function ClassHelper:GetNameplate(guid)
                 v[i]:Show()
                 if v[i] and v[i].IsRunningHideFunc then
                     if not v[i]:IsRunningHideFunc()then
-                        v[i]:HideFunc()
+                        v[i].IsRunningHideFunc=function()
+                            return true
+                        end
                     end
                 else
-                    v[i]:HideFunc()
+                    v[i].IsRunningHideFunc=function()
+                        return true
+                    end
                 end
                 return v[i]
             end
@@ -48,21 +52,20 @@ function ClassHelper:GetNameplate(guid)
         f:SetSize(1,1)
         f:SetPoint("CENTER")
         local function hideFunc()
-            if names[guid]and names[guid].UnitFrame and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)==guid then
-                C_Timer.NewTimer(0.02,hideFunc)
-                function f:IsRunningHideFunc()
-                    return true
+            if f and f.IsRunningHideFunc and f:IsRunningHideFunc()then
+                if not(names[guid]and names[guid].UnitFrame and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)and UnitGUID(names[guid].UnitFrame.BuffFrame.unit)==guid)then
+                    function f:IsRunningHideFunc()
+                        return false
+                    end
+                    f:Hide()
                 end
-            else
-                function f:IsRunningHideFunc()
-                    return false
-                end
-                f:Hide()
             end
         end
+        function f:IsRunningHideFunc()
+            return true
+        end
         f.GetGUID=function()return guid end
-        f.HideFunc=hideFunc
-        C_Timer.NewTimer(0.02,hideFunc)
+        C_Timer.NewTicker(0.02,hideFunc)
         return f
     else
         return nil

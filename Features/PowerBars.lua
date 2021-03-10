@@ -164,8 +164,28 @@ function ClassHelper:NewPowerBar(powerType) -- Power bars NO LONGER SAVE. They M
         dynamic=false,
         power=powerType,
         length=300,
-        height=64
+        height=64,
+        frame=powerbar,
+        extraPower=0
     }
+    function obj:GetCurrentPower()
+        if self.dynamic then
+            return obj:GetDynamicPower()-self.extraPower
+        else
+            return obj:GetDynamicPower()
+        end
+    end
+    function obj:GetDynamicPower()
+        local x=t1:GetText()
+        if x then
+            if tonumber(x)then
+                return tonumber(x)
+            else
+                return x
+            end
+        end
+        return nil
+    end
     function obj:DisplayPercent()
         self.display="PERCENT"
         return self
@@ -259,6 +279,7 @@ function ClassHelper:NewPowerBar(powerType) -- Power bars NO LONGER SAVE. They M
     function obj:DynamicUpdate(additionalPower) -- BETA TEST - Start casting a spell that uses power...
         local power=1 -- Then this new feature allows you to see the final outcome. (Run on event)
         local powerMax=1
+        self.extraPower=additionalPower
         if strupper(self.power)=="HEALTH"then
             power=UnitHealth("player")
             powerMax=UnitHealthMax("player")
@@ -376,6 +397,7 @@ function ClassHelper:NewPowerBar(powerType) -- Power bars NO LONGER SAVE. They M
         if auto and self.dynamic then return end
         local power=1
         local powerMax=1
+        self.extraPower=0
         if strupper(self.power)=="HEALTH"then
             power=UnitHealth("player")
             powerMax=UnitHealthMax("player")
