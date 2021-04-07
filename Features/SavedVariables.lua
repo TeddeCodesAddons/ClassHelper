@@ -345,7 +345,15 @@ local function new_install()
     ClassHelper:Print("Type '/ch whats-new' to see what's new in v"..(ClassHelper.VERSION.str).."!")
 end
 function ClassHelper:DisplayWhatsNew()
-    self:Print("1. Mods now have settings, which can be saved locally. When sharing a mod, the default settings are shared. If you change the default settings, they will be shared instead. (You should only do this if you are the mod author)")
+    self:Print("1. Action buttons can now light up items.")
+    self:Print("2. Fixed issues with exporting mods and sharing.")
+    self:Print("3. IconFrame templates can now display text instead of a number in their stacks information.")
+    self:Print("4. You can now search for NPC IDs with the utility.")
+    self:Print("5. Added some support for other AddOns that modify RaidFrames to make it easier for them to find the CustomUnitFrames.")
+    self:Print("6. Added RaidFrameObject.overlay which allows you to move a line on the RaidFrame anywhere.")
+    self:Print("7. Added \124cff0066ffClassHelper.util:GetSpellInfo()\124r, which allows you to get ALL the important data about a spell with only one function. (No more errors using blizzard ones!)")
+    self:Print("8. Will be making a discord for this AddOn soon. Stay tuned!!")
+    self:Print("Happy gaming - TeddeCodesAddons")
 end
 local function make_data_compatible(oldVersion)
     local ver=oldVersion.update

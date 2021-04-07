@@ -5,7 +5,7 @@ local names={
 local function getNamePlate(u)
     if numNamePlates>0 then
         for i=1,numNamePlates do
-            if _G["NamePlate"..i].UnitFrame and _G["NamePlate"..i].UnitFrame.BuffFrame.unit=="nameplate"..u then
+            if _G["NamePlate"..i].UnitFrame and _G["NamePlate"..i].UnitFrame.BuffFrame and _G["NamePlate"..i].UnitFrame.BuffFrame.unit=="nameplate"..u then
                 return _G["NamePlate"..i]
             end
         end
@@ -87,6 +87,13 @@ local function updateNamePlates()
             if UnitGUID("nameplate"..i)then
                 names[UnitGUID("nameplate"..i)]=getNamePlate(i)
             end
+        end
+    end
+end
+function ClassHelper:GetNamePlateGUID(namePlateUnit)
+    for i,v in pairs(names)do
+        if v==getNamePlate(namePlateUnit)then
+            return i
         end
     end
 end

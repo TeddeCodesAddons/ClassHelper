@@ -102,7 +102,7 @@ local function handle(self,event,...)
                     return
                 end
                 if (not(ClassHelper:Load("Share","MaxBytes")==-1))and channel=="WHISPER"and not(t<ClassHelper:Load("Share","MaxBytes"))then -- If more than the max bytes, then deny request.
-                    if GetTime()-denyTimestamp<5 then
+                    if GetTime()-denyTimestamp>5 then
                         C_ChatInfo.SendAddonMessage("ClassHelper","9","WHISPER",sender)
                         denyTimestamp=GetTime()
                     end
@@ -132,6 +132,7 @@ local function handle(self,event,...)
 
                     }
                 end
+                ClassHelper:Print("\124cffff0000"..sender.." has denied your mod because it was too large.")
             elseif p=="A"then
                 recieve[sender].default_settings=recieve[sender].default_settings..t
             end
@@ -194,7 +195,7 @@ end
 ClassHelper:CreateSlashCommand("set-update-mode","ClassHelper:SetUpdateMode(arguments)","Sets the update mode to 1 or 0. If set to 1, when you attempt to download a mod that already exists, you will update that mod instead.")
 function ClassHelper:ShareMod(modObject,channel,recipient)
     ch=channel
-    rec=recipient
+    rec=recipient.."-"..select(2,UnitFullName("player"))
     bytes=0
     if sending then
         self:Print("\124cffff0000Please wait to send another mod! If you send mods too quickly, they can be mixed up by the reciever.")
@@ -250,18 +251,20 @@ function ClassHelper:ShareMod(modObject,channel,recipient)
         i=i+254
     end
     s(data)
-    i=1
-    data=""
-    while i<strlen(modObject.default_settings)do
-        local d="A"..strsub(modObject.default_settings,i,i+253)
-        data=data..d
-        i=i+254
+    if modObject.default_settings then
+        i=1
+        data=""
+        while i<strlen(modObject.default_settings)do
+            local d="A"..strsub(modObject.default_settings,i,i+253)
+            data=data..d
+            i=i+254
+        end
+        s(data)
     end
-    s(data)
     if modObject.loadable then
-        s("71",channel,recipient)
+        s("71")
     else
-        s("72",channel,recipient)
+        s("72")
     end
     bytes=bytes+2
 end

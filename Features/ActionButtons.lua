@@ -5,15 +5,10 @@ ClassHelper.lit_spell_ids={
     
 }
 function ClassHelper:LightUpSpell(spell)
+    spell=ClassHelper.util:GetSpellInfo(spell).id
+    if not spell then return end
     if not tContains(self.lit_spell_ids,spell)then
-        if tonumber(spell)then
-            tinsert(self.lit_spell_ids,spell)
-        elseif GetSpellInfo(spell)then
-            local s=select(7,GetSpellInfo(spell))
-            if not tContains(self.lit_spell_ids,s)then
-                tinsert(self.lit_spell_ids,s)
-            end
-        end
+        tinsert(self.lit_spell_ids,spell)
     end
     if tonumber(spell)then
         local b=self:SearchActionBar(tonumber(spell),false)
@@ -34,12 +29,10 @@ function ClassHelper:LightUpSpell(spell)
     end
 end
 function ClassHelper:UnLightUpSpell(spell)
+    spell=ClassHelper.util:GetSpellInfo(spell).id
     local ididx=nil
-    if tonumber(spell)then
+    if spell then
         ididx=tIndexOf(self.lit_spell_ids,spell)
-    elseif GetSpellInfo(spell)then
-        local s=select(7,GetSpellInfo(spell))
-        ididx=tIndexOf(self.lit_spell_ids,s)
     end
     if ididx then
         tremove(self.lit_spell_ids,ididx)
@@ -65,7 +58,8 @@ function ClassHelper:UnLightUpSpell(spell)
     end
 end
 function ClassHelper:SearchActionBar(id,convertToId)
-    if convertToId then
+    if not id then return {}end
+    if convertToId and GetSpellInfo(id)then
         id=select(7,GetSpellInfo(id))
     end
     local r={
@@ -94,6 +88,29 @@ function ClassHelper:SearchActionBar(id,convertToId)
                                 if s and s==id then
                                     tinsert(r,p..i)
                                 end
+                            else
+                                s=GetMacroItem(s)
+                                if s then
+                                    if GetItemInfo(id)and not tonumber(id)then
+                                        itemInfo={GetItemInfo(id)}
+                                        local _
+                                        _,id=strsplit(":",itemInfo[2])
+                                    end
+                                    if tonumber(s)and tonumber(s)==id then
+                                        tinsert(r,p..i)
+                                    end
+                                end
+                            end
+                        elseif t=="item"then
+                            if s then
+                                if GetItemInfo(id)and not tonumber(id)then
+                                    itemInfo={GetItemInfo(id)}
+                                    local _
+                                    _,id=strsplit(":",itemInfo[2])
+                                end
+                                if tonumber(id)and tonumber(s)and tonumber(s)==tonumber(id)then
+                                    tinsert(r,p..i)
+                                end
                             end
                         end
                     end
@@ -116,55 +133,25 @@ f:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
 f:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
 f:RegisterEvent("SPELL_DATA_LOAD_RESULT")
 local function updateBar()
-    local l={
-        "ActionButton",
-        "MultiBarBottomLeftButton",
-        "MultiBarBottomRightButton",
-        "MultiBarLeftButton",
-        "MultiBarRightButton"
+    local lit_spells={
+
     }
-    for n=1,getn(l)do
-        local p=l[n]
-        for i=1,12 do
-            if _G[p..i]then
-                if _G[p..i].action then
-                    if GetActionInfo(_G[p..i].action)then
-                        local t,s=GetActionInfo(_G[p..i].action)
-                        if t=="spell"and s then
-                            if tContains(ClassHelper.lit_spell_ids,s)then
-                                ActionButton_ShowOverlayGlow(_G[p..i])
-                                if not tContains(ClassHelper.lit_spells,p..i)then
-                                    tinsert(ClassHelper.lit_spells,p..i)
-                                end
-                            elseif tContains(ClassHelper.lit_spells,p..i)then
-                                ActionButton_HideOverlayGlow(_G[p..i])
-                                local idx=tIndexOf(ClassHelper.lit_spells,p..i)
-                                tremove(ClassHelper.lit_spells,idx)
-                            end
-                        elseif t=="macro"and s then
-                            s=GetMacroSpell(s)
-                            if s then
-                                s=select(7,GetSpellInfo(s))
-                                if s and tContains(ClassHelper.lit_spell_ids,s)then
-                                    ActionButton_ShowOverlayGlow(_G[p..i])
-                                    if not tContains(ClassHelper.lit_spells,p..i)then
-                                        tinsert(ClassHelper.lit_spells,p..i)
-                                    end
-                                elseif s and tContains(ClassHelper.lit_spells,p..i)then
-                                    ActionButton_HideOverlayGlow(_G[p..i])
-                                    local idx=tIndexOf(ClassHelper.lit_spells,p..i)
-                                    tremove(ClassHelper.lit_spells,idx)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
+    for i=1,getn(ClassHelper.lit_spell_ids)do
+        tinsert(lit_spells,ClassHelper.lit_spell_ids[i])
+    end
+    for i=1,getn(ClassHelper.lit_spells)do
+        local t,s=GetActionInfo(_G[ClassHelper.lit_spells[i]].action)
+        if not tContains(lit_spells,s)then
+            ActionButton_HideOverlayGlow(_G[ClassHelper.lit_spells[i]])
         end
+    end
+    for i=1,getn(lit_spells)do
+        ClassHelper:LightUpSpell(lit_spells[i])
     end
 end
 f:SetScript("OnEvent",updateBar)
 GameTooltip:HookScript("OnTooltipSetSpell",updateBar) -- Why couldn't blizz add an event for this?
+GameTooltip:HookScript("OnTooltipSetItem",updateBar)
 function ClassHelper:FlashSpell(spell)
     local b={
         

@@ -1,7 +1,7 @@
-## Interface: 90002
+## Interface: 90005
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
-## Version: 9.0.10
+## Version: 9.0.11
 ## SavedVariables: ClassHelper_Data
 ## LoadOnDemand: 0
 # Core
@@ -38,8 +38,6 @@ Features\ModCreator\ModSettings.lua
 Features\ModCreator\Templates.lua
 Features\WarningTexts.lua
 Features\Export.lua
-Features\ExportTable.lua
-Features\CompressString.lua
 
 # Settings
 Settings\GeneralOptions.lua
@@ -47,6 +45,12 @@ Settings\API.lua
 Settings\FAQ.lua
 Settings\Profiles.lua
 
+# Mods
+Mods\BasicPackage1\Mods.lua
+
 # Beta
 Features\RaidFramesGlow.lua
 Features\CustomUnitFrames\UnitFrameObject.lua
+
+# Utility
+Features\Utility.lua

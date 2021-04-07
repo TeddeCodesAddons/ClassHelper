@@ -96,7 +96,7 @@ function ClassHelper:GetPowerType(power)
     end
 end
 function ClassHelper:NewPowerBar(powerType) -- Power bars NO LONGER SAVE. They MUST BE MADE by m.init.
-    local powerbar=CreateFrame("Frame","Frame",UIParent)
+    local powerbar=CreateFrame("Frame",nil,UIParent)
     powerbar:SetSize(300,64)
     powerbar:SetPoint("CENTER",0,-100,UIParent)
     local powerbarBack=powerbar:CreateTexture(nil,"ARTWORK")

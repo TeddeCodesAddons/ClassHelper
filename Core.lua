@@ -63,9 +63,9 @@ ClassHelper={
     },
     ADDON_PATH_NAME="ClassHelper",
     VERSION={
-        interface=90002,
-        update=10,
-        str="9.0.10"
+        interface=90005,
+        update=11,
+        str="9.0.11"
     }
 }
 function ClassHelper:TextToBool(toggle)

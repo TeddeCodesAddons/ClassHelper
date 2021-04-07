@@ -95,7 +95,7 @@ function ClassHelper:NewIconFrame(parent)
         return cd:IsShown()
     end
     function obj:SetStacks(stacks)
-        if stacks>1 then
+        if type(stacks)~="number"or stacks>1 then
             t1:SetText(stacks)
         else
             t1:SetText("")

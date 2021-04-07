@@ -52,7 +52,7 @@ local function panel_text(t,p,x,y)
     titleText:SetText(t)
     titleText:SetPoint(p,x,y)
 end
-panel_text("ClassHelper v9.0","TOP",0,-5)
+panel_text("ClassHelper v"..(ClassHelper.VERSION.str),"TOP",0,-5)
 local closeButton=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
 closeButton:SetText("x")
 closeButton:SetSize(10,12)

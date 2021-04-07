@@ -368,6 +368,11 @@ local function newUnitFrame(unit)
     healabsorb:SetPoint("RIGHT",health,"RIGHT",0,0)
     healabsorb:SetSize(0,100)
     healabsorb:Hide()
+    local userOverlay=overlay:CreateTexture(nil,"ARTWORK")
+    userOverlay:SetColorTexture(1,0,0,1)
+    userOverlay:SetSize(4,100)
+    userOverlay:SetPoint("LEFT",health2,"RIGHT",0,0)
+    userOverlay:Hide()
     local overhealingabsorb=overlay:CreateTexture(nil,"ARTWORK")
     overhealingabsorb:SetTexture(texturepath("ABSORB_OVER"),true)
     overhealingabsorb:SetPoint("LEFT",-5,0)
@@ -551,6 +556,7 @@ local function newUnitFrame(unit)
     b:SetAttribute("alt-shift-type2","target")
     b:SetAttribute("alt-ctrl-type2","target")
     b:SetAttribute("alt-ctrl-shift-type2","target")
+    b.unit=unit -- For OmniCD and other AddOns that require obj.unit to be an attribute.
     tinsert(secure_buttons,b)
     RegisterUnitWatch(b)
     local obj={
@@ -572,6 +578,10 @@ local function newUnitFrame(unit)
             debuffs={
 
             }
+        },
+        overlay={
+            health=0,
+            color={0,0,1,1}
         }
     }
     local incomingNum=0
@@ -795,6 +805,48 @@ local function newUnitFrame(unit)
             health:SetSize(_hp*200,100)
             health2:SetSize(_hp*200,100)
         end
+        if self.overlay.health then
+            if type(self.overlay.health)=="string"then
+                local overlayHp=0
+                if tonumber(self.overlay.health)then
+                    overlayHp=tonumber(self.overlay.health)
+                elseif strsub(self.overlay.health,strlen(self.overlay.health),strlen(self.overlay.health))and strsub(self.overlay.health,strlen(self.overlay.health),strlen(self.overlay.health))=="%"then
+                    if tonumber(strsub(self.overlay.health,1,strlen(self.overlay.health)-1))then
+                        overlayHp=_hpmax*tonumber(strsub(self.overlay.health,1,strlen(self.overlay.health)-1))/100
+                    end
+                end
+                if overlayHp>0 then
+                    if _hp+(overlayHp/_hpmax)>1 then
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",(200*(1-_hp))-4,0)
+                    elseif _hp+(overlayHp/_hpmax)<0 then
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",-4-(200*_hp),0)
+                    else
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",(overlayHp*200/_hpmax)-4,0)
+                    end
+                    userOverlay:Show()
+                else
+                    userOverlay:Hide()
+                end
+            elseif type(self.overlay=="number")then
+                if self.overlay.health>0 then
+                    if _hp+(self.overlay.health/_hpmax)>1 then
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",(200*(1-_hp))-4,0)
+                    elseif _hp+(self.overlay.health/_hpmax)<0 then
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",-4-(200*_hp),0)
+                    else
+                        userOverlay:SetPoint("LEFT",health,"RIGHT",(self.overlay.health*200/_hpmax)-4,0)
+                    end
+                    userOverlay:Show()
+                else
+                    userOverlay:Hide()
+                end
+            else
+
+            end
+        else
+            userOverlay:Hide()
+        end
+        userOverlay:SetColorTexture(unpack(self.overlay.color))
         if not ticker then
             health:SetColorTexture(unpack(self.colors.health))
         end
@@ -991,6 +1043,15 @@ local function newUnitFrame(unit)
         flashing={...}
         return self
     end
+    function obj:EnableOverlay(additionalHealth)
+        self.overlay.health=additionalHealth
+    end
+    function obj:DisableOverlay()
+        self.overlay.health=0
+    end
+    function obj:SetOverlayColor(...)
+        self.overlay.color={...}
+    end
     C_Timer.NewTicker(0.25,function()
         if ticker then
             health:SetColorTexture(unpack(obj.colors.health))
@@ -1020,6 +1081,15 @@ local has_entered_world=false
 local function handle()
     if not has_entered_world then
         has_entered_world=true
+        if _G.OmniCD and _G.OmniCD[1]and _G.OmniCD[1].unitFrameData then -- Set up OmniCD. (If loaded)
+            tinsert(_G.OmniCD[1].unitFrameData,{
+                [1]="ClassHelper",
+                [2]="ClassHelper_SecureUnitFrame_raid",
+                [3]="raidid",
+                [4]=1
+            })
+            _G.OmniCD[1]:LoadAddOns() -- Load the AddOn into OmniCD.
+        end
         local c=UnitClass("player") -- Setup .dispellable attribute
         if c=="Druid"then
             CLASS_DISPELLS={
@@ -1104,8 +1174,14 @@ local function handle()
             else
                 local t=ClassHelper:Load("CustomUnitFrames","Attributes")
                 for i,v in pairs(t)do
-                    for n=1,getn(secure_buttons)do
-                        secure_buttons[n]:SetAttribute(i,v)
+                    if i=="click"then
+                        for n=1,getn(secure_buttons)do
+                            secure_buttons[n]:RegisterForClicks(v)
+                        end
+                    else
+                        for n=1,getn(secure_buttons)do
+                            secure_buttons[n]:SetAttribute(i,v)
+                        end
                     end
                 end
                 updating=false
@@ -1258,13 +1334,16 @@ local function handle(self,event,unit,status)
         setReady(2)
         rc=true
         local function func()
-            setReady(1)
             if rc then
+                setReady(1)
                 C_Timer.NewTimer(0.05,func)
+            else
+                setReady(-1)
             end
         end
         C_Timer.NewTimer(0.05,func)
         setReady(1)
+        C_Timer.NewTimer(30,function()rc=false end) -- Left the group?? (Fix the RaidFrames)
     elseif event=="READY_CHECK_FINISHED"then
         rc=false
         setReady(-1)

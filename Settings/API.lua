@@ -77,8 +77,44 @@ local function newCmd(commandName,syntax,description,width,header)
     else
         button:SetPoint("TOPLEFT",40,lastPos)
     end
-    button:SetScript("OnClick",function(self)editor:SetText(syntax)desc:SetText(description)self:Disable()if lastButton then lastButton:Enable()end lastButton=self end)
+    button:SetScript("OnClick",function(self)editor:SetText("-- @syntax: off\n"..syntax)desc:SetText(description)self:Disable()if lastButton then lastButton:Enable()end lastButton=self end)
 end
+newCmd("ClassHelper.util:GetSpellInfo",[=[local itemInfo=ClassHelper.util:GetSpellInfo("spellName"or spellId or"itemName"or itemId)
+--[[
+itemInfo={
+    actionButtons={}, -- <Pointers to the action buttons this spell appears on>,
+    name="<spell name>",
+    isSpell=true or false,
+    isItem=true or false,
+    learned=true or false, -- This will also return true for items if you have them in your bag.
+    isLearnedByPet=true or false, -- This checks if the spell is known by your pet(s).
+    icon=spellIconID, -- Number for the ID of the spell's icon.
+    cooldown={
+        max=0, -- The spell's maximum cooldown
+        remaining=0, -- The spell's remaining cooldown
+        lastCastTime -- The timestamp when you last cast the spell. (Used in IconFrames)
+    },
+    info={
+        -- Blizzard's GetSpellInfo() output or GetItemInfo() output.
+    }
+}
+]]]=],[[This will return the ALL of the spell's useful information. Make sure to select the right attribute.
+EX: You want to get the spell's cooldown to put it into an icon frame, use .cooldown.max/remaining/lastCastTime, however if you want to check if the spell is learned, use .learned,
+this function makes everything a lot more efficient, instead of having to look for the correct blizzard function to get what you want.]],200,"\124cffff0000IMPORTANT!")
+newCmd("ClassHelper.util:GetGUID",[[local guid=ClassHelper.util:GetGUID("nameplateX" or unitId)]],[[Will get the unit GUID of a certain nameplate, or unit.
+Use ClassHelper.util:GetGUID("nameplateX") where X is the nameplate ID to get GUIDs from nameplates.]],200)
+newCmd("ClassHelper.util:GetNPCID",[=[local npcTable=ClassHelper.util:GetNPCID("guid")
+--[[
+npcTable={
+    type=<unit's type>, --"Creature" or "Player" (etc...)
+    server_id="server", -- The server's ID.
+    instance_id="instance", -- The instance's ID.
+    zone_uid="zone", -- The zone's unit ID.
+    npc_id=npc, -- The NPC's ID. (Can be used to track NPCs spawning)
+    spawn_id="spawn" -- The spawn ID (kind-of useless, is different for each NPC of the same type)
+}
+]]
+]=],[[Gets the NPC's info from it's GUID. Can also be done with: local type,_,server,instance,zone,npc,spawn=strsplit("-",guid)]],175)
 newCmd("ClassHelper:NewBar",[[local bar=ClassHelper:NewBar(time,"text",spellCD)]],[[Creates a new timer bar.
 This bar can be used to track a cooldown, if specified, but MUST be a spell ID.
 (If you don't know, use '/ch debug' and cast the spell to get the ID.)
@@ -440,5 +476,8 @@ A basic list of some of them are:
 local detectFontFrame=CreateFrame("FRAME")
 detectFontFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 detectFontFrame:SetScript("OnEvent",function()
+    if ClassHelper:Load("ModEditor","SyntaxEnabled")=="true"then
+        ClassHelper:DefineSyntaxBox(editor,function(self,key)if key=="BACKSPACE"and strsub(self:GetText(),self:GetCursorPosition()-3,self:GetCursorPosition())=="    "then self:HighlightText(self:GetCursorPosition()-4,self:GetCursorPosition())end end)
+    end
     editor:SetFont("Interface\\AddOns\\"..(ClassHelper.ADDON_PATH_NAME).."\\Assets\\monaco.ttf",tonumber(ClassHelper:Load("ModEditor","TextSize")))
 end)

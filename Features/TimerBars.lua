@@ -9,7 +9,7 @@ local all_bars={
 
 }
 local numBars=0
-local barAnchor=CreateFrame("Frame","Frame",UIParent)
+local barAnchor=CreateFrame("Frame",nil,UIParent)
 barAnchor:SetSize(256,24)
 barAnchor:SetPoint("CENTER",-10,-212,UIParent)
 local backAnchor=barAnchor:CreateTexture(nil,"BACKGROUND")
@@ -24,7 +24,7 @@ barAnchor:SetScript("OnDragStop",function(self)self:StopMovingOrSizing()ClassHel
 local bars_unlocked=false
 barAnchor:EnableMouse(false)
 local function createBar()
-    local bar=CreateFrame("Frame","Frame",UIParent)
+    local bar=CreateFrame("Frame",nil,UIParent)
     bar:SetSize(256,24)
     local back=bar:CreateTexture(nil,"BACKGROUND")
     back:SetColorTexture(0.1,0.1,0.1,0.4)
