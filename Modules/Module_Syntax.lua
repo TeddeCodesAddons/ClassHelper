@@ -203,7 +203,10 @@ local changed=false
 function ClassHelper:DefineSyntaxBox(box,onkeydown)
     box.SetDisplayedText=box.SetText
     function box:SetText(t)
+        local errorHandler=geterrorhandler()
+        seterrorhandler(function(E)ClassHelper:Print("Oops! There was an error in the syntax check. The full LUA error is shown: "..E)ClassHelper:Print("Please reload your UI with '/reload' to try again.")seterrorhandler(errorHandler)end)
         t=addColorToText(t)
+        seterrorhandler(errorHandler)
         self:SetDisplayedText(t)
         self.last_set_text=GetTime()
     end

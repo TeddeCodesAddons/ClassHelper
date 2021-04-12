@@ -16,8 +16,14 @@ ClassHelper.SLASH_INDEX={
 SLASH_CLASSHELPER1="/classhelper"
 SLASH_CLASSHELPER2="/ch"
 function ClassHelper:RunSlashCommand(callback,arguments)
-    ClassHelper.SLASH_CMD_ARGS=arguments
-    RunScript("local arguments=ClassHelper.SLASH_CMD_ARGS;"..callback)
+    if type(callback)=="string"then
+        ClassHelper.SLASH_CMD_ARGS=arguments
+        RunScript("local arguments=ClassHelper.SLASH_CMD_ARGS;"..callback)
+    elseif type(callback)=="function"then
+        callback()
+    else
+        ClassHelper:Error("Core","Slash command","Unknown callback type",type(callback))
+    end
 end
 SlashCmdList["CLASSHELPER"]=function(msg)
     if msg==""then

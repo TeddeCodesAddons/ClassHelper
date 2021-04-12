@@ -1,3 +1,34 @@
+function ClassHelper:GlowFrame(f,color)
+    ActionButton_ShowOverlayGlow(f)
+    if color then
+        f.overlay.ants:SetVertexColor(unpack(color))
+        f.overlay.spark:SetVertexColor(unpack(color))
+        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
+        f.overlay.innerGlow:SetVertexColor(unpack(color))
+        f.overlay.outerGlow:SetVertexColor(unpack(color))
+        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
+    end
+end
+function ClassHelper:UnGlowFrame(f)
+    f.overlay.ants:SetVertexColor(1,1,1)
+    f.overlay.spark:SetVertexColor(1,1,1)
+    f.overlay.outerGlowOver:SetVertexColor(1,1,1)
+    f.overlay.innerGlow:SetVertexColor(1,1,1)
+    f.overlay.outerGlow:SetVertexColor(1,1,1)
+    f.overlay.innerGlowOver:SetVertexColor(1,1,1)
+    ActionButton_HideOverlayGlow(f)
+end
+function ClassHelper:SetGlowFrameColor(f,color)
+    if color and f.overlay then
+        f.overlay.ants:SetVertexColor(unpack(color))
+        f.overlay.spark:SetVertexColor(unpack(color))
+        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
+        f.overlay.innerGlow:SetVertexColor(unpack(color))
+        f.overlay.outerGlow:SetVertexColor(unpack(color))
+        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
+    end
+end
+local betaFeaturesEnabled=false -- !DEBUG
 local unitFrames={
 
 }
@@ -33,6 +64,9 @@ local whitelist={
 
     },
     enabled=false
+}
+local priorityDebuffs={
+
 }
 local function isBuffBlacklisted(b)
     if tContains(blacklist.buffs,b)or tContains(blacklist.auras,b)then
@@ -238,7 +272,7 @@ local function newUnitFrame(unit)
         debuff:SetPoint("CENTER")
         numDebuffs=numDebuffs+1
         local obj={
-
+            isGlowing=false
         }
         function obj:SetTexture(...)
             debuff:SetTexture(...)
@@ -261,8 +295,23 @@ local function newUnitFrame(unit)
                 t1:SetText("")
             end
         end
+        function obj:SetPriority(isPriority,color)
+            if isPriority and color[1]then
+                if not self.isGlowing then
+                    ClassHelper:GlowFrame(cd,color)
+                    self.isGlowing=true
+                end
+                ClassHelper:SetGlowFrameColor(cd,color)
+            else
+                if self.isGlowing then
+                    ClassHelper:UnGlowFrame(cd)
+                    self.isGlowing=false
+                end
+            end
+        end
         obj:SetStacks(s)
         tinsert(debuffs,obj)
+        return obj -- Priority list needs object returned.
     end
     local function newBuffIcon(icon,start,duration,s)
         local cd=CreateFrame("FRAME",nil,f)
@@ -558,7 +607,15 @@ local function newUnitFrame(unit)
     b:SetAttribute("alt-ctrl-shift-type2","target")
     b.unit=unit -- For OmniCD and other AddOns that require obj.unit to be an attribute.
     tinsert(secure_buttons,b)
-    RegisterUnitWatch(b)
+    if betaFeaturesEnabled then
+        if isRaidFrame then
+            RegisterUnitWatch(b)
+        else -- Should fix the bug where ClassHelper_SecureUnitFrame_player never hides and causes it to glow in the background.
+            RegisterStateDriver(b,"visibility","[@"..unit..",exists,noraid]show;[@"..unit..",noexists]hide;[raid]hide")
+        end
+    else
+        RegisterUnitWatch(b)
+    end
     local obj={
         unit=unit,
         colors={
@@ -648,12 +705,17 @@ local function newUnitFrame(unit)
             end
         end
         local u=self.unit
-        if u and strsub(u,1,5)=="party"then
+        if u and strsub(u,1,5)=="party"then -- Some old code to hide the frames, though the secure frames still show... Should be fixed now anyway
             if _G["ClassHelper_UnitFrame_raid"..strsub(u,6,6)]and _G["ClassHelper_UnitFrame_raid"..strsub(u,6,6)].IsShown and _G["ClassHelper_UnitFrame_raid"..strsub(u,6,6)]:IsShown()then
                 f:Hide()
                 overlay:Hide()
                 return self
             end
+        end
+        if u and u=="player"and IsInRaid()then
+            f:Hide()
+            overlay:Hide()
+            return self
         end
         if not UnitName(u)then
             f:Hide()
@@ -951,12 +1013,21 @@ local function newUnitFrame(unit)
         local debuffsApplied={
 
         }
+        local priority_={
+
+        }
         while name do
             name=UnitAura(u,i,"HARMFUL")
             if name and not isDebuffBlacklisted(name)then
                 local _,icon,count,debuffType,duration,expirationTime,source,isStealable,_,spellId=UnitAura(u,i,"HARMFUL")
                 if not isDebuffBlacklisted(spellId)then
-                    tinsert(auras,{name,count,icon,expirationTime,duration})
+                    if priorityDebuffs[spellId]then
+                        tinsert(priority_,{name,count,icon,expirationTime,duration,priorityDebuffs[spellId]})
+                    elseif priorityDebuffs[name]then
+                        tinsert(priority_,{name,count,icon,expirationTime,duration,priorityDebuffs[name]})
+                    else
+                        tinsert(auras,{name,count,icon,expirationTime,duration})
+                    end
                 end
                 tinsert(self.auras.debuffs,{name,spellId,duration,expirationTime})
                 if debuffType and debuffType~=""then
@@ -985,13 +1056,27 @@ local function newUnitFrame(unit)
         registerDebuffs(debuffsApplied)
         self.dispellable=dispellable
         i=1
-        while i<=getn(auras)and i<=LOADED_VARS.max_debuffs do
-            local name,count,icon,expirationTime,duration=unpack(auras[i])
+        while i<=getn(priority_)and i<=LOADED_VARS.max_debuffs do
+            local name,count,icon,expirationTime,duration,color=unpack(priority_[i])
             if debuffs[i]then
                 debuffs[i]:Show()
                 debuffs[i]:SetTexture(icon)
                 debuffs[i]:SetCooldown(expirationTime-duration,duration)
                 debuffs[i]:SetStacks(count)
+                debuffs[i]:SetPriority(true,color)
+            else
+                newDebuffIcon(icon,expirationTime-duration,duration,count):SetPriority(true,color)
+            end
+            i=i+1
+        end
+        while i-getn(priority_)<=getn(auras)and i<=LOADED_VARS.max_debuffs do
+            local name,count,icon,expirationTime,duration=unpack(auras[i-getn(priority_)])
+            if debuffs[i]then
+                debuffs[i]:Show()
+                debuffs[i]:SetTexture(icon)
+                debuffs[i]:SetCooldown(expirationTime-duration,duration)
+                debuffs[i]:SetStacks(count)
+                debuffs[i]:SetPriority(false)
             else
                 newDebuffIcon(icon,expirationTime-duration,duration,count)
             end
@@ -1153,7 +1238,10 @@ local function handle()
             ["ctrl-shift-type2"]="target",
             ["alt-shift-type2"]="target",
             ["alt-ctrl-type2"]="target",
-            ["alt-ctrl-shift-type2"]="target"
+            ["alt-ctrl-shift-type2"]="target",
+            ["click"]="AnyUp",
+            ["framerate"]="60",
+            ["priority"]="#disabled"
         })
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","Scale",1)
         LOADED_VARS.framerate=tonumber(ClassHelper:Load("CustomUnitFrames","Framerate"))
@@ -1178,11 +1266,43 @@ local function handle()
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:RegisterForClicks(v)
                         end
-                    else
+                    elseif i~="priority"and i~="framerate"then
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:SetAttribute(i,v)
                         end
                     end
+                end
+                if t["framerate"]then
+                    ClassHelper:Save("CustomUnitFrames","Framerate",t["framerate"])
+                end
+                local priority_=t["priority"]
+                if priority_ and strsub(priority_,1,9)~="#disabled"then
+                    local p={
+                        ""
+                    }
+                    for i=1,strlen(priority_)do
+                        local s=strsub(priority_,i,i)
+                        if s=="\n"then
+                            if tonumber(p[getn(p)])then
+                                p[getn(p)]=tonumber(p[getn(p)])
+                            end
+                            tinsert(p,"")
+                        else
+                            p[getn(p)]=p[getn(p)]..s
+                        end
+                    end
+                    local d={
+
+                    }
+                    for i=1,getn(p)do
+                        local a1,a2=strsplit(";",p[i])
+                        if a2 then
+                            d[a1]=loadstring("return {"..a2.."}")()
+                        elseif a1 then
+                            d[a1]={}
+                        end
+                    end
+                    priorityDebuffs=d
                 end
                 updating=false
                 ClassHelper_UnitFrameContainer:SetScale(ClassHelper:Load("CustomUnitFrames","Scale")/2)

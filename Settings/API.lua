@@ -100,7 +100,7 @@ itemInfo={
 }
 ]]]=],[[This will return the ALL of the spell's useful information. Make sure to select the right attribute.
 EX: You want to get the spell's cooldown to put it into an icon frame, use .cooldown.max/remaining/lastCastTime, however if you want to check if the spell is learned, use .learned,
-this function makes everything a lot more efficient, instead of having to look for the correct blizzard function to get what you want.]],200,"\124cffff0000IMPORTANT!")
+this function makes everything a lot more efficient, instead of having to look for the correct blizzard function to get what you want.]],200,"\124cffff6600IMPORTANT!")
 newCmd("ClassHelper.util:GetGUID",[[local guid=ClassHelper.util:GetGUID("nameplateX" or unitId)]],[[Will get the unit GUID of a certain nameplate, or unit.
 Use ClassHelper.util:GetGUID("nameplateX") where X is the nameplate ID to get GUIDs from nameplates.]],200)
 newCmd("ClassHelper.util:GetNPCID",[=[local npcTable=ClassHelper.util:GetNPCID("guid")
@@ -207,7 +207,8 @@ SetSize(), SetColor(), Show(), Hide(), Unlock(), Lock(), GetPosition(), ClearFad
 Fade() allows the bar to change color, based on the amount of power you have. You must specify a priority, as higher numbers will be displayed instead of lower numbers. EX: If less than 50% but also greater than 10%, do the higher priority.
 **When using fade, accepted conditions are (LESS/GREATER)THAN(PERCENT), and EQUALS(PERCENT) EX: "LESSTHAN",45 makes it change color when LESS than 45, "EQUALS",5 makes it change color when exactly 5.
 **When using fade, color syntax is the same as SetColor()]],150)
-newCmd("ClassHelper:ColorPartyRaidFrame",[[ClassHelper:ColorPartyRaidFrame(unitName,hasAura)]],[[Colors the raid frame in the modded raid frames.
+newCmd("|cffff0000ClassHelper:ColorPartyRaidFrame",[[|cffff0000 THIS FUNCTION WILL BE REMOVED IN LATER VERSIONS!!!
+|rClassHelper:ColorPartyRaidFrame(unitName,hasAura)]],[[Colors the raid frame in the modded raid frames.
 * hasAura is either true or false. The color will update automatically.
    ** Filled in when above threshold HIGH.
    ** Filled in red when below threshold LOW, or below HIGH without an aura.

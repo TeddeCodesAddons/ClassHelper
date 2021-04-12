@@ -54,3 +54,6 @@ luac.out
 
 # Unused libraries
 /Libraries/*
+
+# Incomplete features
+/Features/Programmer/*
