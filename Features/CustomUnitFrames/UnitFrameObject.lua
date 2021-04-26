@@ -487,6 +487,11 @@ local function newUnitFrame(unit)
     rangeindicator:SetSize(200,100)
     rangeindicator:SetPoint("TOPLEFT",0,0)
     rangeindicator:Hide()
+    local rangeindicator2=overlay:CreateTexture(nil,"OVERLAY")
+    rangeindicator2:SetColorTexture(0.15,0.15,0.15,0.5)
+    rangeindicator2:SetSize(200,100)
+    rangeindicator2:SetPoint("TOPLEFT",0,0)
+    rangeindicator2:Hide()
     local roletexture=overlay:CreateTexture(nil,"OVERLAY")
     roletexture:SetTexture(texturepath("DAMAGER"),true)
     roletexture:SetPoint("TOPRIGHT",0,0)
@@ -769,6 +774,19 @@ local function newUnitFrame(unit)
             rangeindicator:Hide()
         else
             rangeindicator:Show()
+        end
+        if not self.rangeCheck then
+            self.rangeCheck=ClassHelper.unitFramesRangeCheck
+        end
+        if self.rangeCheck then
+            local range=IsSpellInRange(self.rangeCheck,u)
+            if range and range==1 then
+                rangeindicator2:Hide()
+            else
+                rangeindicator2:Show()
+            end
+        else
+            rangeindicator2:Hide()
         end
         local role=UnitGroupRolesAssigned(u)
         if role and role~="NONE"then
@@ -1488,4 +1506,7 @@ function ClassHelper:ResetCustomRaidFrames()
         obj:UnGlow()
         obj:Flash()
     end
+end
+function ClassHelper:SetCustomUnitFramesRangeCheck(s)
+    self.unitFramesRangeCheck=s
 end

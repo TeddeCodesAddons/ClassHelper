@@ -141,6 +141,9 @@ local function updateBar()
     end
     for i=1,getn(ClassHelper.lit_spells)do
         local t,s=GetActionInfo(_G[ClassHelper.lit_spells[i]].action)
+        if t=="macro"then
+            s=GetMacroSpell(s)or GetMacroItem(s)
+        end
         if not tContains(lit_spells,s)then
             ActionButton_HideOverlayGlow(_G[ClassHelper.lit_spells[i]])
         end
@@ -150,8 +153,7 @@ local function updateBar()
     end
 end
 f:SetScript("OnEvent",updateBar)
-GameTooltip:HookScript("OnTooltipSetSpell",updateBar) -- Why couldn't blizz add an event for this?
-GameTooltip:HookScript("OnTooltipSetItem",updateBar)
+GameTooltip:HookScript("OnUpdate",updateBar) -- Why couldn't blizz add an event for this?
 function ClassHelper:FlashSpell(spell)
     local b={
         

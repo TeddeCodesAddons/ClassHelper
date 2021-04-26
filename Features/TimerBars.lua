@@ -190,7 +190,7 @@ local function createBar()
             end
             if getn(barObject.events)>0 then
                 for i=1,getn(barObject.events)do
-                    if barObject.end_time-barObject.current_time<barObject.events[i][1]and not barObject.events[i][3]then
+                    if barObject.end_time-barObject.current_time<=barObject.events[i][1]and not barObject.events[i][3]then
                         barObject.events[i][3]=true
                         barObject.events[i][2]()
                     end

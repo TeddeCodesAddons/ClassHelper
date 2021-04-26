@@ -20,7 +20,7 @@ function ClassHelper:RunSlashCommand(callback,arguments)
         ClassHelper.SLASH_CMD_ARGS=arguments
         RunScript("local arguments=ClassHelper.SLASH_CMD_ARGS;"..callback)
     elseif type(callback)=="function"then
-        callback()
+        callback(arguments)
     else
         ClassHelper:Error("Core","Slash command","Unknown callback type",type(callback))
     end
