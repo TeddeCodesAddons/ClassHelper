@@ -53,7 +53,7 @@ luac.out
 /Features/CompressString.lua
 
 # Unused libraries
-/Libraries/*
+/Libraries/!beta/*
 
 # Incomplete features
 /Features/Programmer/*

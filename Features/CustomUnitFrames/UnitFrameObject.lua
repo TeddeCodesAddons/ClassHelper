@@ -1,33 +1,3 @@
-function ClassHelper:GlowFrame(f,color)
-    ActionButton_ShowOverlayGlow(f)
-    if color then
-        f.overlay.ants:SetVertexColor(unpack(color))
-        f.overlay.spark:SetVertexColor(unpack(color))
-        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
-        f.overlay.innerGlow:SetVertexColor(unpack(color))
-        f.overlay.outerGlow:SetVertexColor(unpack(color))
-        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
-    end
-end
-function ClassHelper:UnGlowFrame(f)
-    f.overlay.ants:SetVertexColor(1,1,1)
-    f.overlay.spark:SetVertexColor(1,1,1)
-    f.overlay.outerGlowOver:SetVertexColor(1,1,1)
-    f.overlay.innerGlow:SetVertexColor(1,1,1)
-    f.overlay.outerGlow:SetVertexColor(1,1,1)
-    f.overlay.innerGlowOver:SetVertexColor(1,1,1)
-    ActionButton_HideOverlayGlow(f)
-end
-function ClassHelper:SetGlowFrameColor(f,color)
-    if color and f.overlay then
-        f.overlay.ants:SetVertexColor(unpack(color))
-        f.overlay.spark:SetVertexColor(unpack(color))
-        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
-        f.overlay.innerGlow:SetVertexColor(unpack(color))
-        f.overlay.outerGlow:SetVertexColor(unpack(color))
-        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
-    end
-end
 local betaFeaturesEnabled=false -- !DEBUG
 local unitFrames={
 
@@ -68,6 +38,9 @@ local whitelist={
 local priorityDebuffs={
 
 }
+local enabledElements={
+
+}
 local function isBuffBlacklisted(b)
     if tContains(blacklist.buffs,b)or tContains(blacklist.auras,b)then
         return true
@@ -97,6 +70,9 @@ local readyTable={
 
 }
 local function setReady(isReady)
+    if not tContains(enabledElements,"ready")then
+        isReady=-1
+    end
     if isReady==1 then
         if IsInRaid()then
             for i=1,GetNumGroupMembers()do
@@ -417,11 +393,6 @@ local function newUnitFrame(unit)
     healabsorb:SetPoint("RIGHT",health,"RIGHT",0,0)
     healabsorb:SetSize(0,100)
     healabsorb:Hide()
-    local userOverlay=overlay:CreateTexture(nil,"ARTWORK")
-    userOverlay:SetColorTexture(1,0,0,1)
-    userOverlay:SetSize(4,100)
-    userOverlay:SetPoint("LEFT",health2,"RIGHT",0,0)
-    userOverlay:Hide()
     local overhealingabsorb=overlay:CreateTexture(nil,"ARTWORK")
     overhealingabsorb:SetTexture(texturepath("ABSORB_OVER"),true)
     overhealingabsorb:SetPoint("LEFT",-5,0)
@@ -487,11 +458,6 @@ local function newUnitFrame(unit)
     rangeindicator:SetSize(200,100)
     rangeindicator:SetPoint("TOPLEFT",0,0)
     rangeindicator:Hide()
-    local rangeindicator2=overlay:CreateTexture(nil,"OVERLAY")
-    rangeindicator2:SetColorTexture(0.15,0.15,0.15,0.5)
-    rangeindicator2:SetSize(200,100)
-    rangeindicator2:SetPoint("TOPLEFT",0,0)
-    rangeindicator2:Hide()
     local roletexture=overlay:CreateTexture(nil,"OVERLAY")
     roletexture:SetTexture(texturepath("DAMAGER"),true)
     roletexture:SetPoint("TOPRIGHT",0,0)
@@ -640,10 +606,6 @@ local function newUnitFrame(unit)
             debuffs={
 
             }
-        },
-        overlay={
-            health=0,
-            color={0,0,1,1}
         }
     }
     local incomingNum=0
@@ -728,22 +690,28 @@ local function newUnitFrame(unit)
             return self
         end
         local phasedReason=UnitPhaseReason(u)
-        if not phasedReason then
+        if tContains(enabledElements,"phased")then
+            if not phasedReason then
+                phased:Hide()
+            elseif phasedReason==0 then
+                phased:Show()
+            elseif phasedReason==1 then
+                phased:Show()
+            elseif phasedReason==2 then
+                phased:Show()
+            elseif phasedReason==3 then
+                phased:Show()
+            end
+        else
             phased:Hide()
-        elseif phasedReason==0 then
-            phased:Show()
-        elseif phasedReason==1 then
-            phased:Show()
-        elseif phasedReason==2 then
-            phased:Show()
-        elseif phasedReason==3 then
-            phased:Show()
         end
         local otherParty=UnitInOtherParty(u)
-        if otherParty then
-            phased2:Show()
-        else
-            phased2:Hide()
+        if tContains(enabledElements,"instancegroup")then
+            if otherParty then
+                phased2:Show()
+            else
+                phased2:Hide()
+            end
         end
         local isOver=GetMouseFocus()==b -- MouseIsOver(b)
         if isOver then
@@ -763,33 +731,22 @@ local function newUnitFrame(unit)
             end
             GameTooltip:Show()
         end
-        local brez=UnitHasIncomingResurrection(u)
-        if brez then
-            resurrection:Show()
-        else
-            resurrection:Hide()
-        end
+            local brez=UnitHasIncomingResurrection(u)
+            if brez and tContains(enabledElements,"brez")then
+                resurrection:Show()
+            else
+                resurrection:Hide()
+            end
         local threat=UnitThreatSituation(u)
         if UnitInRange(u)or u=="player"then
             rangeindicator:Hide()
-        else
+        elseif tContains(enabledElements,"inrange")then
             rangeindicator:Show()
-        end
-        if not self.rangeCheck then
-            self.rangeCheck=ClassHelper.unitFramesRangeCheck
-        end
-        if self.rangeCheck then
-            local range=IsSpellInRange(self.rangeCheck,u)
-            if range and range==1 then
-                rangeindicator2:Hide()
-            else
-                rangeindicator2:Show()
-            end
         else
-            rangeindicator2:Hide()
+            rangeindicator:Hide()
         end
         local role=UnitGroupRolesAssigned(u)
-        if role and role~="NONE"then
+        if role and role~="NONE"and tContains(enabledElements,"role")then
             roletexture:SetTexture(texturepath(role),true)
             roletexture:Show()
         else
@@ -798,16 +755,24 @@ local function newUnitFrame(unit)
         local isAssist=UnitIsGroupAssistant(u)
         local isLead=UnitIsGroupLeader(u)
         if isLead then
-            assisttexture:SetTexture(texturepath("LEADER"),true)
-            assisttexture:Show()
+            if tContains(enabledElements,"leader")then
+                assisttexture:SetTexture(texturepath("LEADER"),true)
+                assisttexture:Show()
+            else
+                assisttexture:Hide()
+            end
         elseif isAssist then
-            assisttexture:SetTexture(texturepath("ASSIST"),true)
-            assisttexture:Show()
+            if tContains(enabledElements,"assist")then
+                assisttexture:SetTexture(texturepath("ASSIST"),true)
+                assisttexture:Show()
+            else
+                assisttexture:Hide()
+            end
         else
             assisttexture:Hide()
         end
         local summoningInfo=C_IncomingSummon.IncomingSummonStatus(u)
-        if summoningInfo then
+        if summoningInfo and tContains(enabledElements,"incomingsummon")then
             if summoningInfo==0 then
                 summoning:Hide()
             elseif summoningInfo==1 then
@@ -821,7 +786,7 @@ local function newUnitFrame(unit)
         else
             summoning:Hide()
         end
-        if threat then
+        if threat and tContains(enabledElements,"aggro")then
             if threat==0 then
                 aggro:Hide()
                 lowaggro:Hide()
@@ -848,8 +813,10 @@ local function newUnitFrame(unit)
         end
         if UnitIsConnected(u)then
             offline:Hide()
-        else
+        elseif tContains(enabledElements,"offline")then
             offline:Show()
+        else
+            offline:Hide()
         end
         t2:SetText(UnitName(u))
         local _hpmax=unithp.hpmax(u)
@@ -865,12 +832,16 @@ local function newUnitFrame(unit)
         _hp=_hp/_hpmax
         if _hp>1 then return self end -- Bad render frame (_hp is most likely infinity, divide by 0)
         obj.dead=UnitIsDeadOrGhost(u)
-        if _hp==0 then
-            t1:SetText("Dead")
-        elseif obj.dead then
-            t1:SetText("Ghost")
+        if tContains(enabledElements,"percent")then
+            if _hp==0 then
+                t1:SetText("Dead")
+            elseif obj.dead then
+                t1:SetText("Ghost")
+            else
+                t1:SetText(math.floor(_hp*100).."%")
+            end
         else
-            t1:SetText(math.floor(_hp*100).."%")
+            t1:SetText("")
         end
         if obj.dead then
             health:Hide()
@@ -885,52 +856,14 @@ local function newUnitFrame(unit)
             health:SetSize(_hp*200,100)
             health2:SetSize(_hp*200,100)
         end
-        if self.overlay.health then
-            if type(self.overlay.health)=="string"then
-                local overlayHp=0
-                if tonumber(self.overlay.health)then
-                    overlayHp=tonumber(self.overlay.health)
-                elseif strsub(self.overlay.health,strlen(self.overlay.health),strlen(self.overlay.health))and strsub(self.overlay.health,strlen(self.overlay.health),strlen(self.overlay.health))=="%"then
-                    if tonumber(strsub(self.overlay.health,1,strlen(self.overlay.health)-1))then
-                        overlayHp=_hpmax*tonumber(strsub(self.overlay.health,1,strlen(self.overlay.health)-1))/100
-                    end
-                end
-                if overlayHp>0 then
-                    if _hp+(overlayHp/_hpmax)>1 then
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",(200*(1-_hp))-4,0)
-                    elseif _hp+(overlayHp/_hpmax)<0 then
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",-4-(200*_hp),0)
-                    else
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",(overlayHp*200/_hpmax)-4,0)
-                    end
-                    userOverlay:Show()
-                else
-                    userOverlay:Hide()
-                end
-            elseif type(self.overlay=="number")then
-                if self.overlay.health>0 then
-                    if _hp+(self.overlay.health/_hpmax)>1 then
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",(200*(1-_hp))-4,0)
-                    elseif _hp+(self.overlay.health/_hpmax)<0 then
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",-4-(200*_hp),0)
-                    else
-                        userOverlay:SetPoint("LEFT",health,"RIGHT",(self.overlay.health*200/_hpmax)-4,0)
-                    end
-                    userOverlay:Show()
-                else
-                    userOverlay:Hide()
-                end
-            else
-
-            end
-        else
-            userOverlay:Hide()
-        end
-        userOverlay:SetColorTexture(unpack(self.overlay.color))
         if not ticker then
             health:SetColorTexture(unpack(self.colors.health))
         end
-        back:SetColorTexture(unpack(self.colors.background))
+        if tContains(enabledElements,"background")then
+            back:SetColorTexture(unpack(self.colors.background))
+        else
+            back:SetColorTexture(0.05,0.05,0.05,0.9)
+        end
         if _absorb+_hp>1 then
             absorb:SetTexCoord(0,1-_hp,0,1)
             absorb:SetSize(200*(1-_hp),100)
@@ -963,6 +896,10 @@ local function newUnitFrame(unit)
         else
             healabsorb:SetTexCoord(0,_healabsorb,0,1)
             healabsorb:SetSize(200*_healabsorb,100)
+            overhealingabsorb:Hide()
+        end
+        if not tContains(enabledElements,"overabsorbs")then
+            overshield:Hide()
             overhealingabsorb:Hide()
         end
         if _healabsorb>0 then
@@ -1071,7 +1008,11 @@ local function newUnitFrame(unit)
             end
             i=i+1
         end
-        registerDebuffs(debuffsApplied)
+        if tContains(enabledElements,"dispeltypes")then
+            registerDebuffs(debuffsApplied)
+        else
+            registerDebuffs({})
+        end
         self.dispellable=dispellable
         i=1
         while i<=getn(priority_)and i<=LOADED_VARS.max_debuffs do
@@ -1145,15 +1086,6 @@ local function newUnitFrame(unit)
     function obj:Flash(...)
         flashing={...}
         return self
-    end
-    function obj:EnableOverlay(additionalHealth)
-        self.overlay.health=additionalHealth
-    end
-    function obj:DisableOverlay()
-        self.overlay.health=0
-    end
-    function obj:SetOverlayColor(...)
-        self.overlay.color={...}
     end
     C_Timer.NewTicker(0.25,function()
         if ticker then
@@ -1259,7 +1191,8 @@ local function handle()
             ["alt-ctrl-shift-type2"]="target",
             ["click"]="AnyUp",
             ["framerate"]="60",
-            ["priority"]="#disabled"
+            ["priority"]="#disabled",
+            ["elements"]="aggro,brez,incomingSummon,background,overabsorbs,phased,offline,dispelTypes,instanceGroup,leader,assist,role,percent,ready,inRange"
         })
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","Scale",1)
         LOADED_VARS.framerate=tonumber(ClassHelper:Load("CustomUnitFrames","Framerate"))
@@ -1284,7 +1217,7 @@ local function handle()
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:RegisterForClicks(v)
                         end
-                    elseif i~="priority"and i~="framerate"then
+                    elseif i~="priority"and i~="framerate"and i~="elements"then
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:SetAttribute(i,v)
                         end
@@ -1292,6 +1225,27 @@ local function handle()
                 end
                 if t["framerate"]then
                     ClassHelper:Save("CustomUnitFrames","Framerate",t["framerate"])
+                end
+                if t["elements"]then
+                    enabledElements={strsplit(",",strlower(t["elements"]))}
+                else
+                    enabledElements={
+                        "aggro",
+                        "brez",
+                        "incomingsummon",
+                        "background",
+                        "overabsorbs",
+                        "phased",
+                        "offline",
+                        "dispeltypes",
+                        "instancegroup",
+                        "leader",
+                        "assist",
+                        "role",
+                        "percent",
+                        "ready",
+                        "inrange"
+                    }
                 end
                 local priority_=t["priority"]
                 if priority_ and strsub(priority_,1,9)~="#disabled"then
@@ -1506,7 +1460,4 @@ function ClassHelper:ResetCustomRaidFrames()
         obj:UnGlow()
         obj:Flash()
     end
-end
-function ClassHelper:SetCustomUnitFramesRangeCheck(s)
-    self.unitFramesRangeCheck=s
 end

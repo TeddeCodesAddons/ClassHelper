@@ -120,13 +120,16 @@ function ClassHelper:NewIconFrame(parent)
         cd:SetAlpha(...)
         return self
     end
-    function obj:Glow()
-        ActionButton_ShowOverlayGlow(cd)
+    function obj:Glow(r,g,b,a)
+        ClassHelper:GlowFrame(cd,{r,g,b,a})
         return self
     end
     function obj:UnGlow()
-        ActionButton_HideOverlayGlow(cd)
+        ClassHelper:UnGlowFrame(cd)
         return self
+    end
+    function obj:SetGlowColor(r,g,b,a)
+        ClassHelper:SetGlowFrameColor(cd,{r,g,b,a})
     end
     local isShaking=false
     local function shake()

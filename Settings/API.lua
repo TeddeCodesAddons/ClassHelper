@@ -180,6 +180,22 @@ If you want to be able to show multiple warnings at once, or show a warning for 
 Extra features - warningObj:Shake() - Shakes the warning. (EX: You could do this and change the color if a countdown is about to expire)
 warningObj:Flash() - Flashes the warning.
 warningObj:SetColor() - Changes the warning's color. (Using \124c[color] in the text will prevent color from changing)]],200)
+newCmd("ClassHelper:NewIconFrame",[[local iconFrame=ClassHelper:NewIconFrame(parent)
+iconFrame:Show()
+iconFrame:Hide()
+local isShown=iconFrame:IsShown()
+iconFrame:SetStacks(stacks)
+iconFrame:SetPoint("point",rel,"relPt",x,y)
+iconFrame:SetAlpha(alpha) -- Useful if you want the icon half-faded
+iconFrame:Glow(r,g,b,a) -- Edit the RBGA values to change the color of the glow.
+iconFrame:UnGlow()
+iconFrame:SetGlowColor(r,g,b,a) -- Sets the glow's color without unglowing and reglowing.
+iconFrame:Shake() -- Toggles shaking, use again to disable.
+iconFrame:IsShaking()
+iconFrame:SetBorder(r,g,b,a) -- Changes the IconFrame's border color.
+iconFrame:SetDuration(start,duration,r,g,b,a) -- You MUST specify a start time and a duration. RGBA override will prevent the timer from changing color when it is going to expire.
+iconFrame:SetIcon(icon) -- Specify an icon ID. Can be found with ClassHelper.util:GetSpellInfo("spell").icon]],[[Creates an IconFrame with the specified methods.
+You can glow this IconFrame and change it's timer, color, and stacks.]],200)
 newCmd("ClassHelper:NewPowerBar",[[GLOBAL_BAR_OBJECT=ClassHelper:NewPowerBar("powerType")]],"Creates a new (mana) bar. This bar can be customized. It can display any power type. EX: \124cffff6600COMBOPOINTS\124r, \124cffff6600COMBO_POINTS\124r are both combo points, \124cffff6600SOUL_SHARDS\124r and \124cffff6600SOUL_SHARD_FRAGMENTS\124r is for soul shards and their fragments. You can create multiple bars. Just make sure to make them a global variable, or a global function that can access them, otherwise you can't hide them when the mod unloads.",200,"Power bars")
 newCmd("ClassHelper:DoManaAlerts",[[ClassHelper:DoManaAlerts()]],[[Alerts if you have gone below 50%, 35%, or 15% mana.
 Plays a sound and shows a message at the same time.]],200)
@@ -207,16 +223,7 @@ SetSize(), SetColor(), Show(), Hide(), Unlock(), Lock(), GetPosition(), ClearFad
 Fade() allows the bar to change color, based on the amount of power you have. You must specify a priority, as higher numbers will be displayed instead of lower numbers. EX: If less than 50% but also greater than 10%, do the higher priority.
 **When using fade, accepted conditions are (LESS/GREATER)THAN(PERCENT), and EQUALS(PERCENT) EX: "LESSTHAN",45 makes it change color when LESS than 45, "EQUALS",5 makes it change color when exactly 5.
 **When using fade, color syntax is the same as SetColor()]],150)
-newCmd("|cffff0000ClassHelper:ColorPartyRaidFrame",[[|cffff0000 THIS FUNCTION WILL BE REMOVED IN LATER VERSIONS!!!
-|rClassHelper:ColorPartyRaidFrame(unitName,hasAura)]],[[Colors the raid frame in the modded raid frames.
-* hasAura is either true or false. The color will update automatically.
-   ** Filled in when above threshold HIGH.
-   ** Filled in red when below threshold LOW, or below HIGH without an aura.
-   ** Filled in black when above theshold LOW, and has an aura, but below threshold HIGH.
-* unitName can be returned from destName in COMBAT_LOG_EVENT_UNFILTERED.
-* If you aren't in a raid, the party frames will be directly colored green or red, reguardless of health.
-]],210,"Raidframes")
-newCmd("<CustomRaidFrames functions>",[=[-- CustomRaidFrames Glimmer Tracker
+newCmd("<CustomRaidFrames functions>",[=[-- CustomRaidFrames Glimmer Tracker (EXAMPLE)
 local varsPointer=ClassHelper.vars
 ClassHelper.vars["raidframesfunc"]=function(t)
     for i=1,getn(t)do
@@ -298,19 +305,7 @@ ClassHelper:SetCustomRaidFramesUpdateFunction(varsPointer["raidframesfunc"])
 -- :Flash(r,g,b,a) -- obj:Flash(nil) removes flashing
 -- :IsGlowing() -- returns true or false
 -- :IsFlashing() -- returns true or false]=],[[FUNCTION SYNTAX: ClassHelper:SetCustomRaidFramesUpdateFunction(func)
-You pass a function as an argument. This function must be cleared on spec swaps. Make sure to define the function under ClassHelper.vars so you can put it in the reinit too. Read the help text and see how the |cffff6600sample table (below)|cffffff00 works for more info on this function.]],210)
-newCmd("ClassHelper:SetRaidFrameGlowFunction",[[ClassHelper:SetRaidFrameGlowFunction(function(t)
---  for i=1,getn(t)do
---      local f=t[i]
---      if f.hp.percent<50 then
---          if not f:IsGlowing()then
---              f:Glow()
---          end
---      else
---          f:UnGlow()
---      end
---  end
-end)]],[[Will set the raid frames glow function. nil will disable this feature. The sample code lights up player raidframes when they have less than 50% of their max health remaining.]],250)
+You pass a function as an argument. This function must be cleared on spec swaps. Make sure to define the function under ClassHelper.vars so you can put it in the reinit too. Read the help text and see how the |cffff6600sample table (below)|cffffff00 works for more info on this function.]],210,"CustomUnitFrames")
 newCmd("ClassHelper:LightUpSpell",[[ClassHelper:LightUpSpell("spellName"or spellId)]],"Lights up the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",175,"Action buttons")
 newCmd("ClassHelper:UnLightUpSpell",[[ClassHelper:UnLightUpSpell("spellName"or spellId)]],"Disables lighting on the spell on the action bar. Affects all instances of the spell.\n\124cffff0000ElvUI, and other AddOns that alter your action bars are NOT supported!",200)
 newCmd("ClassHelper:FlashSpell",[[ClassHelper:FlashSpell("spellName"or spellId)

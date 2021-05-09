@@ -64,8 +64,8 @@ ClassHelper={
     ADDON_PATH_NAME="ClassHelper",
     VERSION={
         interface=90005,
-        update=12,
-        str="9.0.12"
+        update=14,
+        str="9.0.14"
     }
 }
 function ClassHelper:TextToBool(toggle)
@@ -119,4 +119,34 @@ function ClassHelper:ConvertTime(t)
         return (h*60)+m
     end
     return h
+end
+function ClassHelper:GlowFrame(f,color)
+    ActionButton_ShowOverlayGlow(f)
+    if color then
+        f.overlay.ants:SetVertexColor(unpack(color))
+        f.overlay.spark:SetVertexColor(unpack(color))
+        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
+        f.overlay.innerGlow:SetVertexColor(unpack(color))
+        f.overlay.outerGlow:SetVertexColor(unpack(color))
+        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
+    end
+end
+function ClassHelper:UnGlowFrame(f)
+    f.overlay.ants:SetVertexColor(1,1,1)
+    f.overlay.spark:SetVertexColor(1,1,1)
+    f.overlay.outerGlowOver:SetVertexColor(1,1,1)
+    f.overlay.innerGlow:SetVertexColor(1,1,1)
+    f.overlay.outerGlow:SetVertexColor(1,1,1)
+    f.overlay.innerGlowOver:SetVertexColor(1,1,1)
+    ActionButton_HideOverlayGlow(f)
+end
+function ClassHelper:SetGlowFrameColor(f,color)
+    if color and f.overlay then
+        f.overlay.ants:SetVertexColor(unpack(color))
+        f.overlay.spark:SetVertexColor(unpack(color))
+        f.overlay.outerGlowOver:SetVertexColor(unpack(color))
+        f.overlay.innerGlow:SetVertexColor(unpack(color))
+        f.overlay.outerGlow:SetVertexColor(unpack(color))
+        f.overlay.innerGlowOver:SetVertexColor(unpack(color))
+    end
 end

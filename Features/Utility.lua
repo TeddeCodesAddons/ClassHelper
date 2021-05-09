@@ -194,3 +194,7 @@ function util:SearchActionBar(id)
     end
     return r
 end
+local LibRangeCheck=LibStub("LibRangeCheck-2.0")
+function util:GetUnitRange(u,v)
+    return LibRangeCheck:GetRange(u,v)
+end
