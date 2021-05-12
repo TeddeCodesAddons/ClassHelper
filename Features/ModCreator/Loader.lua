@@ -76,6 +76,7 @@ function ClassHelper:LoadAllCurrentMods()
         end
     end
     local zone=GetZoneText()
+    local subzone=GetSubZoneText()or zone
     local zoneid=select(8,GetInstanceInfo())
     local all={
         "class:"..class,
@@ -83,6 +84,7 @@ function ClassHelper:LoadAllCurrentMods()
         "specid:"..class..specId,
         "zone:"..zone,
         "zoneid:"..zoneid,
+        "subzone:"..subzone,
         "all",
         "custom"
     }
