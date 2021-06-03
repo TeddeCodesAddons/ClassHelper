@@ -1,4 +1,5 @@
 These libraries are not created by me, and their info remains intact. To view the library info, open its file.
 I found these libraries in WeakAuras, which in some ways can be used better than this addon.
 LibRangeCheck-2.0 is currently the only library being used.
+LibHealComm-4.0 is also being used in classic only. It is intended to allow you to see incoming heals like in retail WoW.
 It is intended to avoid me having a nightmare looking up spells on google to find out how to check range between units.

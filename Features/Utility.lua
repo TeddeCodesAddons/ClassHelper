@@ -69,10 +69,10 @@ function util:GetGUID(unit)
         return UnitGUID("target")
     end
 end
-function util:GetCooldown(spell)
+function util:GetCooldown(spell,forceItem)
     local _time,CD=GetSpellCooldown(spell)
     local gcd_time,GCD=GetSpellCooldown(61304) -- Global cooldown
-    if not(_time and CD)then
+    if forceItem or not(_time and CD)then
         if not tonumber(spell)then
             spell=self:GetSpellInfo(spell).id
         end
@@ -80,7 +80,13 @@ function util:GetCooldown(spell)
         if not(_time and CD)then
             return nil,"Invalid"
         end
+        if _time==0 then
+            return 0,0
+        end
         return CD-(GetTime()-_time),CD
+    end
+    if _time==0 then
+        return 0,0
     end
     if GCD-(GetTime()-gcd_time)~=CD-(GetTime()-_time)then
         return CD-(GetTime()-_time),CD
@@ -88,7 +94,7 @@ function util:GetCooldown(spell)
         return 0,CD
     end
 end
-function util:GetSpellInfo(spell)
+function util:GetSpellInfo(spell,forceItem)
     if not spell then return {}end
     local t={
         
@@ -98,7 +104,7 @@ function util:GetSpellInfo(spell)
     }
     local id=0
     local icon=0
-    if GetSpellInfo(spell)then
+    if GetSpellInfo(spell)and not forceItem then
         spellInfo={GetSpellInfo(spell)}
         id=spellInfo[7]
         icon=spellInfo[3]
@@ -113,19 +119,20 @@ function util:GetSpellInfo(spell)
         t.isItem=true
         t.isSpell=false
         t.name=spellInfo[1]
+        t.equipped=IsEquippedItem(id)
     else
         spellInfo={nil,"Invalid"}
     end
     if id==0 or not id then return {}end
-    local timeRemaining,CD=self:GetCooldown(id)
+    local timeRemaining,CD=self:GetCooldown(id,forceItem)
     t.info=spellInfo
     t.cooldown={
         remaining=timeRemaining,
         max=CD,
-        lastCastTime=GetSpellCooldown(id)or GetItemCooldown(id)or false
+        lastCastTime=((not forceItem)and GetSpellCooldown(id))or GetItemCooldown(id)or false
     }
     t.id=tonumber(id)
-    t.learned=IsSpellKnown(id)or GetItemCount(id)>0
+    t.learned=((not forceItem)and IsSpellKnown(id))or GetItemCount(id)>0
     t.isLearnedByPet=IsSpellKnown(id,true)or nil
     t.icon=icon
     t.actionButtons=self:SearchActionBar(id)
@@ -197,4 +204,41 @@ end
 local LibRangeCheck=LibStub("LibRangeCheck-2.0")
 function util:GetUnitRange(u,v)
     return LibRangeCheck:GetRange(u,v)
+end
+function util:GetAuraInfo(unit,auraName,type,mustBeOwn)
+    local filter=type
+    if type then
+        if mustBeOwn then
+            filter=filter.."|PLAYER"
+        end
+    elseif mustBeOwn then
+        filter="PLAYER"
+    else
+        filter=nil
+    end
+    local auras={
+
+    }
+    local i=1
+    local name=UnitAura(unit,i,filter)
+    while name do
+        local _,icon,count,debuffType,duration,expirationTime,source,isStealable,_,spellId=UnitAura(unit,i,filter)
+        auras[name]={
+            stacks=count,
+            icon=icon,
+            expirationTime=expirationTime,
+            duration=duration,
+            source=source,
+            isStealable=isStealable,
+            dispelType=debuffType,
+            id=spellId,
+            name=name
+        }
+        i=i+1
+        name=UnitAura(unit,i,filter)
+    end
+    if auraName and auras[auraName]then
+        return auras[auraName]
+    end
+    return auras
 end

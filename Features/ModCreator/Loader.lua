@@ -61,6 +61,9 @@ function ClassHelper:LoadAllCurrentMods()
     if self.ResetCustomRaidFrames then
         self:ResetCustomRaidFrames()
     end
+    if self.SetupDispellableAttribute then
+        self:SetupDispellableAttribute()
+    end
     local class=UnitClass("player")
     local specId=""
     local spec=""
@@ -76,7 +79,8 @@ function ClassHelper:LoadAllCurrentMods()
         end
     end
     local zone=GetZoneText()
-    local subzone=GetSubZoneText()or zone
+    local sub=GetSubZoneText()
+    local subzone=(sub~=""and sub)or zone
     local zoneid=select(8,GetInstanceInfo())
     local all={
         "class:"..class,

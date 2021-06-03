@@ -1,16 +1,22 @@
 ## Interface: 90005
+## X-Interface: 90005
+## X-WhatsNew: New UnitFrame attributes! If you would like a tooltip to appear with all the buffs and debuffs that a unit has, go to |cffff6600/ch > FAQ > Dispel tooltip attributes|r for more info.
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
-## Version: 9.0.14
+## Author: TeddeCodesAddons
+## Version: 9.0.15
 ## SavedVariables: ClassHelper_Data
 ## LoadOnDemand: 0
 # Core
 Core.lua
+InitVars.lua
 RemovedFunctions.lua
 
 # Libraries
 Libraries\LibStub\LibStub.lua
 Libraries\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libraries\LibHealComm-4.0\LibHealComm-4.0.lua
 
 # Modules
 Modules\Module_Names.lua
@@ -54,6 +60,7 @@ Settings\Profiles.lua
 Mods\BasicPackage1\Mods.lua
 
 # CustomUnitFrames
+Features\CustomUnitFrames\DispelTooltip.lua
 Features\CustomUnitFrames\UnitFrameObject.lua
 
 # Utility

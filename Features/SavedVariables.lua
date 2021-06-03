@@ -345,13 +345,12 @@ local function new_install()
     ClassHelper:Print("Type '/ch whats-new' to see what's new in v"..(ClassHelper.VERSION.str).."!")
 end
 function ClassHelper:DisplayWhatsNew()
-    self:Print("1. Debuffs can now be prioritized and glowed on CustomUnitFrames.")
-    self:Print("2. Added function arguments to ClassHelper:CreateSlashCommand().")
-    self:Print("3. Fixed massive performance issues in the mod editor. (Removed lots of extra functions)")
-    self:Print("4. Will be removing normal RaidFrames functions, to avoid confusion with CustomUnitFrames. (Future versions)")
-    self:Print("5. Added attributes for 'framerate', and attribute help. (See FAQ)")
-    self:Print("6. Made a discord for this AddOn! Join at https://discord.gg/6RzJPGjwtv")
-    self:Print("Happy gaming - TeddeCodesAddons")
+    local n=self.VERSION.whats_new
+    for i=1,getn(n)do
+        self:Print(i..". "..n[i])
+    end
+    self:Print("Join our discord: https://discord.gg/6RzJPGjwtv")
+    self:Print("Happy Gaming! - TeddeCodesAddons")
 end
 local function make_data_compatible(oldVersion)
     local ver=oldVersion.update

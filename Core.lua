@@ -61,13 +61,8 @@ ClassHelper={
             [3]="Protection"
         }
     },
-    ADDON_PATH_NAME="ClassHelper",
-    VERSION={
-        interface=90005,
-        update=14,
-        str="9.0.14"
-    }
-}
+    ADDON_PATH_NAME="ClassHelper"
+} -- Version moved to InitVars.lua
 function ClassHelper:TextToBool(toggle)
     toggle=strlower(toggle)
     if toggle=="on"or toggle=="1"or toggle=="true"or toggle=="t"then

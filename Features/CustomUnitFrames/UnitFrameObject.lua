@@ -1,3 +1,10 @@
+local HealComm
+if WOW_PROJECT_ID==WOW_PROJECT_MAINLINE then
+    isClassic=false
+else
+    isClassic=true
+    HealComm=LibStub("LibHealComm-4.0")
+end
 local betaFeaturesEnabled=false -- !DEBUG
 local unitFrames={
 
@@ -8,7 +15,7 @@ local secure_buttons={
 local unithp={
     hp=UnitHealth,
     hpmax=UnitHealthMax,
-    absorb=UnitGetTotalAbsorbs,
+    absorb=UnitGetTotalAbsorbs, -- HealComm will overwrite these functions in classic.
     healabsorb=UnitGetTotalHealAbsorbs,
     incomingheals=UnitGetIncomingHeals
 }
@@ -177,9 +184,10 @@ local LOADED_VARS={
 }
 local rowCounter=0
 local columnCounter=0
-local CLASS_DISPELLS={
+ClassHelper.CLASS_DISPELS={
     
 }
+ClassHelper.DISPEL_ABILITY={}
 local function newUnitFrame(unit)
     local isRaidFrame=false
     if strsub(unit,1,4)=="raid"then
@@ -505,7 +513,7 @@ local function newUnitFrame(unit)
         dispellable=false
         if getn(debuffs)>0 then
             for i=1,getn(debuffs)do
-                if tContains(CLASS_DISPELLS,debuffs[i])then
+                if tContains(ClassHelper.CLASS_DISPELS,debuffs[i])then
                     dispellable=true
                 end
             end
@@ -633,32 +641,51 @@ local function newUnitFrame(unit)
         end
     end
     local function getIncoming(max_,current)
-        amountHP=current
-        incomingNum=0
-        local t={
+        if isClassic then
+            amountHP=current
+            incomingNum=0
+            local t={
 
-        }
-        for i=1,GetNumGroupMembers()do
-            local h=unithp.incomingheals(obj.unit,"raid"..i)
-            if h and h>0 then
-                t[i]=h
-            end
-        end
-        local total=0
-        for i,v in pairs(t)do
-            displayInc(v,max_)
-            total=total+v
-        end
-        local actualTotal=unithp.incomingheals(obj.unit)
-        if actualTotal then
-            displayInc(actualTotal-total,max_)
-        end
-        incomingNum=incomingNum+1
-        while incomingNum<=getn(incomingTable)do
-            if incomingTable[incomingNum]then
-                incomingTable[incomingNum]:Hide()
+            }
+            local actualTotal=HealComm:GetHealAmount(UnitGUID(obj.unit),HealComm.ALL_HEALS)or 0 -- If it's classic, use HealComm.
+            if actualTotal then
+                displayInc(actualTotal,max_)
             end
             incomingNum=incomingNum+1
+            while incomingNum<=getn(incomingTable)do
+                if incomingTable[incomingNum]then
+                    incomingTable[incomingNum]:Hide()
+                end
+                incomingNum=incomingNum+1
+            end
+        else
+            amountHP=current
+            incomingNum=0
+            local t={
+
+            }
+            for i=1,GetNumGroupMembers()do
+                local h=unithp.incomingheals(obj.unit,"raid"..i)
+                if h and h>0 then
+                    t[i]=h
+                end
+            end
+            local total=0
+            for i,v in pairs(t)do
+                displayInc(v,max_)
+                total=total+v
+            end
+            local actualTotal=unithp.incomingheals(obj.unit)
+            if actualTotal then
+                displayInc(actualTotal-total,max_)
+            end
+            incomingNum=incomingNum+1
+            while incomingNum<=getn(incomingTable)do
+                if incomingTable[incomingNum]then
+                    incomingTable[incomingNum]:Hide()
+                end
+                incomingNum=incomingNum+1
+            end
         end
     end
     local flashing={
@@ -689,7 +716,7 @@ local function newUnitFrame(unit)
             overlay:Hide()
             return self
         end
-        local phasedReason=UnitPhaseReason(u)
+        local phasedReason=UnitPhaseReason and UnitPhaseReason(u)
         if tContains(enabledElements,"phased")then
             if not phasedReason then
                 phased:Hide()
@@ -745,7 +772,7 @@ local function newUnitFrame(unit)
         else
             rangeindicator:Hide()
         end
-        local role=UnitGroupRolesAssigned(u)
+        local role=UnitGroupRolesAssigned and UnitGroupRolesAssigned(u)
         if role and role~="NONE"and tContains(enabledElements,"role")then
             roletexture:SetTexture(texturepath(role),true)
             roletexture:Show()
@@ -771,7 +798,7 @@ local function newUnitFrame(unit)
         else
             assisttexture:Hide()
         end
-        local summoningInfo=C_IncomingSummon.IncomingSummonStatus(u)
+        local summoningInfo=C_IncomingSummon and C_IncomingSummon.IncomingSummonStatus(u)
         if summoningInfo and tContains(enabledElements,"incomingsummon")then
             if summoningInfo==0 then
                 summoning:Hide()
@@ -821,8 +848,16 @@ local function newUnitFrame(unit)
         t2:SetText(UnitName(u))
         local _hpmax=unithp.hpmax(u)
         local _hp=unithp.hp(u)
-        local _absorb=unithp.absorb(u)
-        local _healabsorb=unithp.healabsorb(u)
+        local _absorb=0
+        if isClassic then
+            _absorb=HealComm:GetHealAmount(UnitGUID(obj.unit),HealComm.ABSORB_SHIELDS)or 0
+        else
+            _absorb=unithp.absorb(u)
+        end
+        local _healabsorb=0
+        if not isClassic then
+            _healabsorb=unithp.healabsorb(u)
+        end
         obj.health.current=_hp
         obj.health.max=_hpmax
         obj.health.absorb=_absorb
@@ -984,7 +1019,7 @@ local function newUnitFrame(unit)
                         tinsert(auras,{name,count,icon,expirationTime,duration})
                     end
                 end
-                tinsert(self.auras.debuffs,{name,spellId,duration,expirationTime})
+                tinsert(self.auras.debuffs,{name,spellId,duration,expirationTime,debuffType})
                 if debuffType and debuffType~=""then
                     debuffType=strlower(debuffType)
                     if debuffType=="curse"then
@@ -1046,6 +1081,11 @@ local function newUnitFrame(unit)
                 debuffs[i]:Hide()
             end
             i=i+1
+        end
+        if isOver then
+            ClassHelper:ShowDispelTooltip(self.auras.debuffs)
+        else
+            ClassHelper:HideDispelTooltip()
         end
         return self
     end
@@ -1125,48 +1165,64 @@ local function handle()
             })
             _G.OmniCD[1]:LoadAddOns() -- Load the AddOn into OmniCD.
         end
-        local c=UnitClass("player") -- Setup .dispellable attribute
-        if c=="Druid"then
-            CLASS_DISPELLS={
-                "CURSE",
-                "POISON"
-            }
-            if GetSpecialization()==4 then
-                tinsert(CLASS_DISPELLS,"MAGIC")
+        function ClassHelper:SetupDispellableAttribute()
+            local c=UnitClass("player") -- Setup .dispellable attribute
+            if c=="Druid"then
+                ClassHelper.CLASS_DISPELS={
+                    "CURSE",
+                    "POISON"
+                }
+                ClassHelper.DISPEL_ABILITY={["Remove Corruption"]={"CURSE","POISON"}}
+                if GetSpecialization and GetSpecialization()==4 then
+                    tinsert(ClassHelper.CLASS_DISPELS,"MAGIC")
+                    ClassHelper.DISPEL_ABILITY={["Nature's Cure"]={"CURSE","POISON","MAGIC"}}
+                end
+            elseif c=="Paladin"then
+                ClassHelper.CLASS_DISPELS={
+                    "DISEASE",
+                    "POISON"
+                }
+                ClassHelper.DISPEL_ABILITY={["Cleanse Toxins"]={"DISEASE","POISON"}}
+                if GetSpecialization and GetSpecialization()==1 then
+                    tinsert(ClassHelper.CLASS_DISPELS,"MAGIC")
+                    ClassHelper.DISPEL_ABILITY={["Cleanse"]={"DISEASE","POISON","MAGIC"}}
+                end
+            elseif c=="Priest"then
+                ClassHelper.CLASS_DISPELS={
+                    "MAGIC",
+                    "DISEASE"
+                }
+                ClassHelper.DISPEL_ABILITY={["Purify"]={"DISEASE","MAGIC"},["Mass Dispel"]={"MAGIC"}}
+                if GetSpecialization and GetSpecialization()==3 then
+                    ClassHelper.DISPEL_ABILITY={["Purify Disease"]={"DISEASE"},["Mass Dispel"]={"MAGIC"}}
+                end
+            elseif c=="Monk"then
+                ClassHelper.CLASS_DISPELS={
+                    "DISEASE",
+                    "POISON"
+                }
+                ClassHelper.DISPEL_ABILITY={["Detox"]={"DISEASE","POISON"}}
+                if GetSpecialization and GetSpecialization()==2 then
+                    tinsert(ClassHelper.CLASS_DISPELS,"MAGIC")
+                    ClassHelper.DISPEL_ABILITY={["Detox"]={"DISEASE","POISON","MAGIC"}}
+                end
+            elseif c=="Shaman"then
+                ClassHelper.CLASS_DISPELS={
+                    "CURSE"
+                }
+                ClassHelper.DISPEL_ABILITY={["Cleanse Spirit"]={"CURSE"}}
+                if GetSpecialization and GetSpecialization()==3 then
+                    tinsert(ClassHelper.CLASS_DISPELS,"MAGIC")
+                    ClassHelper.DISPEL_ABILITY={["Purify Spirit"]={"MAGIC","CURSE"}}
+                end
+            elseif c=="Mage"then
+                ClassHelper.CLASS_DISPELS={
+                    "CURSE"
+                }
+                ClassHelper.DISPEL_ABILITY={["Remove Curse"]={"CURSE"}}
             end
-        elseif c=="Paladin"then
-            CLASS_DISPELLS={
-                "DISEASE",
-                "POISON"
-            }
-            if GetSpecialization()==1 then
-                tinsert(CLASS_DISPELLS,"MAGIC")
-            end
-        elseif c=="Priest"then
-            CLASS_DISPELLS={
-                "MAGIC",
-                "DISEASE"
-            }
-        elseif c=="Monk"then
-            CLASS_DISPELLS={
-                "DISEASE",
-                "POISON"
-            }
-            if GetSpecialization()==2 then
-                tinsert(CLASS_DISPELLS,"MAGIC")
-            end
-        elseif c=="Shaman"then
-            CLASS_DISPELLS={
-                "CURSE"
-            }
-            if GetSpecialization()==3 then
-                tinsert(CLASS_DISPELLS,"MAGIC")
-            end
-        elseif c=="Mage"then
-            CLASS_DISPELLS={
-                "CURSE"
-            }
         end
+        ClassHelper:SetupDispellableAttribute()
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","Framerate","60")
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","DebuffPoint","BOTTOMLEFT")
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","BuffPoint","BOTTOMRIGHT")
@@ -1192,7 +1248,10 @@ local function handle()
             ["click"]="AnyUp",
             ["framerate"]="60",
             ["priority"]="#disabled",
-            ["elements"]="aggro,brez,incomingSummon,background,overabsorbs,phased,offline,dispelTypes,instanceGroup,leader,assist,role,percent,ready,inRange"
+            ["elements"]="aggro,brez,incomingSummon,background,overabsorbs,phased,offline,dispelTypes,instanceGroup,leader,assist,role,percent,ready,inRange",
+            ["dispel_tooltip"]="#disabled",
+            ["tooltip_conditions"]="#disabled",
+            ["tooltip_blacklist"]="#disabled\nPut anything you don't want to detect as a dispel (EX: Mass Dispel) here..."
         })
         ClassHelper:DefaultSavedVariable("CustomUnitFrames","Scale",1)
         LOADED_VARS.framerate=tonumber(ClassHelper:Load("CustomUnitFrames","Framerate"))
@@ -1212,12 +1271,20 @@ local function handle()
                 C_Timer.NewTimer(1,function()updateFunc(false)end)
             else
                 local t=ClassHelper:Load("CustomUnitFrames","Attributes")
+                local special={
+                    "priority",
+                    "framerate",
+                    "elements",
+                    "dispel_tooltip",
+                    "tooltip_conditions",
+                    "tooltip_blacklist"
+                }
                 for i,v in pairs(t)do
                     if i=="click"then
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:RegisterForClicks(v)
                         end
-                    elseif i~="priority"and i~="framerate"and i~="elements"then
+                    elseif not tContains(special,i)then
                         for n=1,getn(secure_buttons)do
                             secure_buttons[n]:SetAttribute(i,v)
                         end
@@ -1247,6 +1314,23 @@ local function handle()
                         "inrange"
                     }
                 end
+                if ClassHelper.dispelTooltipLoaded then -- Be careful when using functions from other files. Make sure they are loaded first...
+                    if t["dispel_tooltip"]then
+                        ClassHelper:SetDispelTooltipData(t["dispel_tooltip"])
+                    else
+                        ClassHelper:SetDispelTooltipData("#disabled")
+                    end
+                    if t["tooltip_conditions"]then
+                        ClassHelper:SetDispelTooltipConditions(t["tooltip_conditions"])
+                    else
+                        ClassHelper:SetDispelTooltipConditions("#disabled")
+                    end
+                end
+                if t["tooltip_blacklist"]and strsplit("\n",t["tooltip_blacklist"])~="#disabled"then
+                    ClassHelper.dispelBlacklist=strsplit("\n",t["tooltip_blacklist"])
+                else
+                    ClassHelper.dispelBlacklist={}
+                end
                 local priority_=t["priority"]
                 if priority_ and strsub(priority_,1,9)~="#disabled"then
                     local p={
@@ -1269,7 +1353,7 @@ local function handle()
                     for i=1,getn(p)do
                         local a1,a2=strsplit(";",p[i])
                         if a2 then
-                            d[a1]=loadstring("return {"..a2.."}")()
+                            d[a1]={strsplit(",",a2)} -- Removed this for security reasons, you can no longer edit the RGBA values with custom functions.
                         elseif a1 then
                             d[a1]={}
                         end
@@ -1321,7 +1405,14 @@ local function handle()
                     ["ctrl-shift-type2"]="target",
                     ["alt-shift-type2"]="target",
                     ["alt-ctrl-type2"]="target",
-                    ["alt-ctrl-shift-type2"]="target"
+                    ["alt-ctrl-shift-type2"]="target",
+                    ["click"]="AnyUp",
+                    ["framerate"]="60",
+                    ["priority"]="#disabled",
+                    ["elements"]="aggro,brez,incomingSummon,background,overabsorbs,phased,offline,dispelTypes,instanceGroup,leader,assist,role,percent,ready,inRange",
+                    ["dispel_tooltip"]="#disabled",
+                    ["tooltip_conditions"]="#disabled",
+                    ["tooltip_blacklist"]="#disabled\nPut anything you don't want to detect as a dispel (EX: Mass Dispel) here..."
                 })
                 self:Print("Resetting to the default attributes.")
                 updateFunc(true)

@@ -49,6 +49,9 @@ if not lib then
 end
 
 local IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+if WOW_PROJECT_ID==5 then -- BC
+    IsClassic=true
+end
 
 -- << STATIC CONFIG
 

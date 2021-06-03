@@ -44,12 +44,28 @@ EX: to make Polymorph glow blue, type "Polymorph;0.1,0.1,1". (0 is the minimum a
 The first number is the red, the second the green, and the third is the blue. If you don't want the debuff to glow, just type the buff name.
 Typing "#disabled" into the beginning of priority will disable the priority list. (Doesn't matter if there are buffs listed after "#disabled")
 
+|r|cffff0000*YOU MUST USE NUMBERS TO COLOR PRIORITY DEBUFFS BECAUSE IT IS A TEXTURE, NOT TEXT.
+
 |rframerate|cffff6600: The maximum framerate for the RaidFrames. This will never exceed your game's current framerate. (Automatically goes slower when needed)
 
 |rclick|cffff6600: The clicking method for the RaidFrames. Recommended methods are "AnyUp" and "AnyDown".
 AnyUp will make the RaidFrames normal, they will activate their actions when you release the mouse.
 AnyDown will make it so if you click on the frame, it will perform it's action when you click the mouse down.
 *AnyDown is faster, but most people are used to AnyUp, and AnyDown is not really an optimization, because for some people it might make it more challenging to cast on their current target if they switch targets by accident.
+
+|rHave a suggestion? Join the discord and type it in the suggestions channel!]],200)
+newFAQ("|cffff6600Dispel tooltip attributes",[[dispel_tooltip|cffff6600: There is now a dispel tooltip in the CustomUnitFrames. By default, this is disabled, but when enabled, this attribute will control what debuffs are prioritized on the tooltip.
+EX: Typing "Unstable Affliction;ff0000" in here will make Unstable Affliction appear closer to the cursor and red.
+
+|r|cffff0000*ON THE TOOLTIP, YOU MUST USE HEXCODES TO COLOR DEBUFFS BECAUSE IT IS TEXT, NOT A TEXTURE.
+
+|rtooltip_conditions|cffff6600: These are the conditions in which the tooltip will show. Typing "#disabled" here will disable the tooltip entirely.
+To use, type either 'arena', 'warmode', 'battleground', 'pvp', 'pvporwarmode', 'instance', 'raid', 'party', 'group', 'always', or 'cooldown'.
+You may use advanced conditionals too. EX: Here's how you would enable the tooltip in PvP while the spell is off cooldown...
+!pvp: false (sets it so if you aren't in a battleground or arena to disable the tooltip), cooldown: true (sets it to display when off cooldown), always: false (sets it to hide the tooltip in none of these cases)
+Make sure to separate each conditional with a newline!
+
+|rtooltip_blacklist|cffff6600: Put buffs here you don't want to appear on the tooltip. These will never appear on the tooltip.
 
 |rHave a suggestion? Join the discord and type it in the suggestions channel!]],200)
 newFAQ("Raidframes errors",[[*THIS FEATURE WILL BE REMOVED IN LATER VERSIONS OF THIS ADDON* If your raidframes won't show, you likely didn't set the |cffff6600ClassHelper.is_healer|r variable in the mod settings.

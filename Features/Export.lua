@@ -26,12 +26,12 @@ C_Timer.NewTicker(0.25,function()
         tremove(pings,1)
     else
         if sending then
-            ClassHelper:Print("Your mod was sent, and the reciever was notified.")
+            ClassHelper:Print("Your mod was sent, and the receiver was notified.")
         end
         sending=false
     end
 end)
-local recieve={
+local receive={
 
 }
 local function notifyMod(sender,timestamp)
@@ -56,10 +56,10 @@ local function handle(self,event,...)
             if tonumber(p)and tonumber(p)<8 and denyMod==sender then return end -- Ignore mods that have been denied transmission.
             if p=="0"then
                 local bytes2=0
-                if recieve[sender]and recieve[sender].bytes then
-                    bytes2=recieve[sender].bytes
+                if receive[sender]and receive[sender].bytes then
+                    bytes2=receive[sender].bytes
                 end
-                recieve[sender]={
+                receive[sender]={
                     title=t,
                     data="",
                     init="",
@@ -75,25 +75,25 @@ local function handle(self,event,...)
                 }
                 updateFunc()
             elseif p=="1"then
-                recieve[sender].title=recieve[sender].title..t
+                receive[sender].title=receive[sender].title..t
             elseif p=="2"then
-                recieve[sender].data=recieve[sender].data..t
+                receive[sender].data=receive[sender].data..t
             elseif p=="3"then
-                recieve[sender].init=recieve[sender].init..t
+                receive[sender].init=receive[sender].init..t
             elseif p=="4"then
-                recieve[sender].unload=recieve[sender].unload..t
+                receive[sender].unload=receive[sender].unload..t
             elseif p=="5"then
-                recieve[sender].reinit=recieve[sender].reinit..t
+                receive[sender].reinit=receive[sender].reinit..t
             elseif p=="6"then
-                recieve[sender].load=recieve[sender].load..t
+                receive[sender].load=receive[sender].load..t
             elseif p=="7"then
                 if t=="1"then
-                    recieve[sender].loadable=true
+                    receive[sender].loadable=true
                 else
-                    recieve[sender].loadable=false
+                    receive[sender].loadable=false
                 end
-                recieve[sender].transmitting=nil
-                notifyMod(sender,recieve[sender].timestamp)
+                receive[sender].transmitting=nil
+                notifyMod(sender,receive[sender].timestamp)
             elseif p=="8"then
                 ClassHelper:DefaultSavedVariable("Share","MaxBytes",65536) -- 64 KB seems about right for most mods.
                 if tonumber(t)then
@@ -111,7 +111,7 @@ local function handle(self,event,...)
                     denyMod=""
                 end
                 if (not(ClassHelper:Load("Share","MaxBytes")==-1))and t<ClassHelper:Load("Share","MaxBytes")then
-                    recieve[sender]={
+                    receive[sender]={
                         title="",
                         data="",
                         init="",
@@ -134,7 +134,7 @@ local function handle(self,event,...)
                 end
                 ClassHelper:Print("\124cffff0000"..sender.." has denied your mod because it was too large.")
             elseif p=="A"then
-                recieve[sender].default_settings=recieve[sender].default_settings..t
+                receive[sender].default_settings=receive[sender].default_settings..t
             end
         end
     end
@@ -142,18 +142,18 @@ end
 f:SetScript("OnEvent",handle)
 local update_mode=false
 function ClassHelper:DownloadModFromSender(sender)
-    if recieve[sender].transmitting then
+    if receive[sender].transmitting then
         self:Print("You couldn't download the mod because it was still in transmission. Please wait for it to complete before attempting to download the mod.")
         return
     end
-    local title=recieve[sender].title
-    local data=recieve[sender].data
-    local init=recieve[sender].init
-    local unload=recieve[sender].unload
-    local reinit=recieve[sender].reinit
-    local load=recieve[sender].load
-    local loadable=recieve[sender].loadable
-    local default_settings=recieve[sender].default_settings
+    local title=receive[sender].title
+    local data=receive[sender].data
+    local init=receive[sender].init
+    local unload=receive[sender].unload
+    local reinit=receive[sender].reinit
+    local load=receive[sender].load
+    local loadable=receive[sender].loadable
+    local default_settings=receive[sender].default_settings
     local m={
         title=title,
         data=data,
@@ -198,7 +198,7 @@ function ClassHelper:ShareMod(modObject,channel,recipient)
     rec=recipient.."-"..select(2,UnitFullName("player"))
     bytes=0
     if sending then
-        self:Print("\124cffff0000Please wait to send another mod! If you send mods too quickly, they can be mixed up by the reciever.")
+        self:Print("\124cffff0000Please wait to send another mod! If you send mods too quickly, they can be mixed up by the receiver.")
         return
     end
     sending=true
@@ -289,7 +289,7 @@ local function init()
 
     }
     local function newEntry(entry)
-        entry=recieve[entry]
+        entry=receive[entry]
         if not entry then return end
         id=id+1
         local t=textlist[id]
@@ -317,7 +317,7 @@ local function init()
     end
     local function update()
         id=0
-        for i,v in pairs(recieve)do
+        for i,v in pairs(receive)do
             newEntry(i)
         end
     end

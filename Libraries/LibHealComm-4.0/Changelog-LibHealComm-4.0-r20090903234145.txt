@@ -1,0 +1,134 @@
+Shadowed:
+	- GetHealAmount and GetOtherHealAmount will now floor any results returned
+	- Changed to using SPELL_AURA_* instead of SPELL_CAST_SUCCESS for hot detection, fixes hots not working for people who aren't the player
+	- Fixed a bug in the band code for channels and hots if you requested a time that has no heals after it
+	- Fixed a bug where HealComm_HealStopped could fire after all the data was reset
+	- Fixed hots being listed as casted on the caster not the target
+	- - Moved channels back to being stored by spell name as Tranquility uses different spellIDs for the actual name/rank spellID and the heal spellID
+	- Moved pending data to be wiped then HealStopped to be called to be safe
+	- Fixed bucketing of multi-target heal checks so it actually works
+	- Fixed typo in the multi target detection for channels
+	- Fixed guid -> time map not being removed when removing all players in the list
+	- Fixed hots that a had stack removed not compressing the GUID before sending
+	- DRUID: Fixed Tranquility, will correctly be forced onto the players group, and actually obey groups when finding who it's casted on
+	- PRIEST: Fixed Prayer of Healing, will correctly obey the group restrictions on who it will land on
+	- SHAMAN: Added Riptide (Need to wait until tomorrow to test it)
+	- SHAMAN: Moved Earth Shield check to keep a list of Earth Shields instead of only one as the Glyph is bugged for the time being
+	- One day, I will remember that I need to bump minor before pushing
+Zachary Anker:
+	- PRIEST: Added Renew
+	- Fixed an error when casting a channel while requesting how much it healed
+	- Redid time banding code, if you request the next 3 seconds and a hot ticks at 0.50, 1.50, 2.50, 3.50 it will return 3 ticks instead of 4 or 2
+	- Added code to support a hot stack being removed before it ends (Lifebloom being purged)
+	- Added check so if a bad GUID is passed that cannot be decompressed it will ignore it
+	- DRUID: Added Rejuvenation and Lifebloom in
+	- DRUID: Fixed typo in Idol of Health not being listed as a base healing increasing relic - Changed bit fields around a little in case I add absorbs later on (No API change necessary)
+	- SHAMAN: Changed Glyph of Lesser Healing Wave to increase Lesser Healing Wave by 20% regardless of Earth Shield caster (From jlam's 3.0 change)
+	- Updated GetHealModifier to use the time banding code for hots
+Shadowed:
+	- Fixed a table index nil error when RAID_ROSTER_UPDATE or PARTY_MEMBERS_CHANGED fired before PLAYER_LOGIN
+	- Added more of the base formula code in for hots, although they seem to be a bit of a pain and not want to work easily
+	- Math is hard, fixed 10-man Necrotic Poison being listed as 5% healing reduction
+	- Pulled code in for triggering comms with casting/hots fading
+	- No longer recalculating set bonuses while in combat as you can't change them while in combat
+	- Added a check to automatically figure out if a channel or hot is multi target (Added room in the spec to force this either way if necessary)
+	- Changed to no longer allow duplicate entries of the same player with the same heal on them from the same caster, as no HoT can be casted on the same person twice (Except Earthliving being dual wielded, but nobody cares about those people)
+	- Fixed heal ended removal logic for specific removals
+Gnarfoz:
+	- typo fix (healComm -> HealComm)
+Shadowed:
+	- PALADIN: Added Touched by the Light (10/20/30% more healing on crit)
+	- Added an interrupted flag to HealStopped that will indicate a heal was interrupted either by a player or a spell that forced the cast to stop (Documentation updated)
+	- Moved to watching cast delayed events instead of comm messages as it's faster
+	- Should also make sure to define variables, that is generally considered a good idea
+	- Fixed CASTED_HEALS constant
+	- Fixed typo, GetOtherHealAmount should have been GetOthersHealAmount
+	- Added a name or "" when building the modifier database so it won't error if Blizzard removes one
+	- Changed to only register CHAT_MSG_ADDON and UNIT_AURA if the player is grouped and they are not a healer
+	- Changed event registration for healers to be done when the library finishes initializing
+	- Added GetOtherHealAmount(guid, bitFlag[, time]) returns heals using the provided filters for everyone except the player
+	- Fixed an error in UNIT_AURA when the player is not a Druid, Shaman, Paladin or Priest
+	- Or not, changed to disallow no library packaging
+	- Added the no-lib-strip tag so it won't reference the toc files when disembedded
+	- Minor version bumped as I tagged this as beta
+	- SHAMAN: Fixed Glyph of Healing Wave returning the targets GUID for both the normal heal and the 20% heal
+	- Changed GetCasterTable -> GUIDHasHealed(guid)
+	- Made GetHealAmount actually work
+	- Added a full table wipe for a pending heal table when it has no data left
+	- Fixed delayed heals not firing the right GUIDs when it has a delayed heal
+	- Fixed channeled heals not working locally
+	- Fixed concat spellname error at line #1547-ish
+	- Fixed self error around line #1672 when leaving a group
+	- Removed the old pending heal files
+	- Renamed to LibHealComm-4.0 as per xbeep's announcement: http://forums.wowace.com/showpost.php?p=286152&postcount=394
+	- Implemented all of the API calls
+	- Removed all debug code for warning if it finds a bad GUID
+	- Moved all heal types to use the bitflags
+	- Added the basic for hot support so it will support any future hots added
+	- Added an expiration check on major zone changes (Need to add a callback for this)
+	- Added function calls so the players local data is updated for their own heals
+	- Added all of the comm data in, keeping the sending of it commented out for the time being so more testing on GUID detection can be done
+	- Changed so that when the player leaves a group the major group-specific data tables are release for GC
+	- Fixed compression and pending heals table not being removed when a GUID disappears
+	- Fixed Tranquility and Prayer of Healing having the same GUID twice
+	- Changed RAID_ROSTER_UPDATE and PARTY_MEMBERS
+	- Updated all GetHealTargets calls to compress the GUID first
+	- Updated distribution method to be changed based on group and zone type
+	- DRUID: Added Tranquility and double checked other formulas accuracy
+	- PALADIN: Fixed and double checked other formulas accuracy
+	- PRIEST: Fixed Penance formula and double checked other formulas accuracy
+	- SHAMAN: Fixed Riptide modifier and double checked other formulas accuracy
+	- Added a wipe of the debug map on zone change
+	- Added support for /targetlasttarget and /targetlastfriend when casting via cursor
+	- Merged a bunch of functions since they're all the same
+	- Redid detection code again to account for latency better and be able to be more sturdy and less error prone.
+	Added debug and self reporting in, if it finds a GUID mismatch it will report it (throttled at one per 5 minutes). It doesn't do anything yet, this just lets me have people test it and make sure it works well.
+	Added support for heals casted through /assist
+	- SHAMAN: Added all of the Shaman data
+	- PALADIN: Added Divine Favor support
+	- PRIEST: Fixed a few more formulas to be more accurate
+	- Fixed average heal scanning picking up damage number for multi purpose spells such as Penance or Holy Shock
+	- Fixed down ranking formulas so they work
+	- Fixed calculations of heals that modify the base healing value
+	- Fixed average heal cache not being reset on talent changes
+	- Changed GetHealTargets to support heals with differing heal values
+	- PRIEST: Added Lesser Heal and Heal calculations
+	- Moved general healing calculations to a simple function so I can stop duplicating the same code 20 times
+	- Removed the level table as it's unnecessary and annoying
+	- PRIEST: Added all Priest spells, everything seems to be accurate but Penance is ~100 healing off
+	Added Fetid Healing (-25%) and Guardian Spirit (+40%) as healing modifiers
+	Added channeled spell detection
+	Added fake grouping when inside a party so Prayer of Healing and such spells pick up the player healing their "group"
+	Fixed an error when logging in with a Glyph socket unfilled
+	Fixed GUID detection failing when auto self cast is on but a spell forces a targeting icon (Binding Heal)
+	Fixed GUID detection when chain casting a spell causing it to be "queued"
+	- Fixed calculations on spells with no spell power and downrank
+	Fixed heal calculations being ran on spells
+	Added guid mapping for group spells like Beacon of Light or Prayer of Healing
+	PALADIN: Added Paladin data, Holy Light, Flash of Light and Beacon of Light
+	DRUID: Added check to return a spell check if the player has 100% or more Nature spell crit
+	- Moved aura changes to using UNIT_AURA while I work out a hybrid system, made it switch Necrotic Poison based on zone type though
+	Added the last bit of modifier changing to Druid healing
+	Fixed spellID for Avenging Wrath
+	Fixed player modifier detection
+	Fixed ZONE_CHANGED_NEW_AREA not being called when the library is initialized
+	- Rewrote the GUID -> cast detection to actually work consistently
+	- Pulled in and tested all Druid data
+	Renamed everything inside to PendHeals
+	More code changes to adjust to what it needs to do
+	- Renamed to LibPendingHeals-1.0
+	- - Added more of the Druid stuff, just committing these before I rename
+	- Added Divine Plea to self modifiers
+	- Fixed Wound Poison so it lists all of it's rank (because it uses a unique buff spellID/spellName for each rank)
+	- Cleaned up the stack modifiers so it actually works sanely
+	- Updated to package as LibPendingHeals-1.0
+	- Fixed GUID detection, need to make sure we can assist an unit cause if we can't we can't heal it.
+	Started to pull in spell and talent data, have Druids so far
+	Now has an actual upgrade path!
+	Moved a few spells to using names as some like Mortal Strike or Wound Poison are the same amount all the time (and this way I don't have to add 50 spellIDs!)
+	Added Necrotic Aura, Embrace of the Vampyr, Shadow Spike, Dark Volley, Wounding Strike, Ray of Pain, Shroud of Darkness, Chop, Necrotic Strike to healing modifiers
+	Modifier detection works now
+	Glyph caching also works now
+	Added talent caching
+	- Updated .pkgmeta
+	- - Still playing around with this, but the basic aura modifier, glyph and spell caching should be working fine. Pretty sure I have the code for identifying units a spell was cast on by GUID is working too
