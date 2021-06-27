@@ -1,10 +1,10 @@
 ## Interface: 90005
 ## X-Interface: 90005
-## X-WhatsNew: New UnitFrame attributes! If you would like a tooltip to appear with all the buffs and debuffs that a unit has, go to |cffff6600/ch > FAQ > Dispel tooltip attributes|r for more info.
+## X-WhatsNew: Removed the annoying '.util' in between ClassHelper and all utility functions.~Added new unit checking functions to let mods automatically detect cleave and other spreading effects.~Fixed nameplate issues with the new updates.~Added invisible "timer" objects. Use ClassHelper:NewTimer() instead of ClassHelper:NewBar() unless you want a bar to show.
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
 ## Author: TeddeCodesAddons
-## Version: 9.0.15
+## Version: 9.0.16
 ## SavedVariables: ClassHelper_Data
 ## LoadOnDemand: 0
 # Core
@@ -34,6 +34,7 @@ Features\AlertSystem.lua
 Features\PowerBars.lua
 Features\Sound.lua
 Features\TimerBars.lua
+Features\Timers.lua
 Features\NamePlates.lua
 Features\IconFrame.lua
 

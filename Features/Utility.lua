@@ -1,8 +1,8 @@
 local util=ClassHelper.util
-if not util then
-    ClassHelper.util={
+if not util then -- Making ClassHelper.util just ClassHelper to make this easier to use for players.
+    ClassHelper.util=ClassHelper--[[{
 
-    }
+    }]]
     util=ClassHelper.util
 end
 function util:ConvertNumberToTime(num)
@@ -66,7 +66,7 @@ function util:GetGUID(unit)
     if strsub(unit,1,9)=="nameplate"then
         return ClassHelper:GetNameplateGUID(unit)
     else
-        return UnitGUID("target")
+        return UnitGUID(unit)
     end
 end
 function util:GetCooldown(spell,forceItem)
@@ -240,5 +240,133 @@ function util:GetAuraInfo(unit,auraName,type,mustBeOwn)
     if auraName and auras[auraName]then
         return auras[auraName]
     end
+    if auraName then
+        return nil
+    end
     return auras
+end
+function util:GetNearbyUnits(range)
+    local t={
+        OOR={
+            units={
+
+            },
+            amount=0
+        },
+        aggroNeutral={
+            units={
+
+            },
+            amount=0
+        },
+        aggroHostile={
+            units={
+
+            },
+            amount=0
+        },
+        aggroFriendly={
+            units={
+
+            },
+            amount=0
+        },
+        neutral={
+            units={
+
+            },
+            amount=0
+        },
+        hostile={
+            units={
+
+            },
+            amount=0
+        },
+        friendly={
+            units={
+
+            },
+            amount=0
+        },
+        units={
+
+        },
+        amount=0
+    }
+    local i=1
+    while UnitExists("nameplate"..i)or i<=40 do -- Make sure that all nameplates are scanned.
+        if UnitExists("nameplate"..i)then
+            if(not range)or(select(2,self:GetUnitRange("nameplate"..i))or 0)<=range then
+                tinsert(t.units,UnitGUID("nameplate"..i))
+                t.amount=t.amount+1
+                if UnitIsEnemy("player","nameplate"..i)then
+                    if UnitAffectingCombat("nameplate"..i)then
+                        tinsert(t.aggroHostile.units,UnitGUID("nameplate"..i))
+                        t.aggroHostile.amount=t.aggroHostile.amount+1
+                    else
+                        tinsert(t.hostile.units,UnitGUID("nameplate"..i))
+                        t.hostile.amount=t.hostile.amount+1
+                    end
+                elseif UnitIsFriend("player","nameplate"..i)then
+                    if UnitAffectingCombat("nameplate"..i)then
+                        tinsert(t.aggroFriendly.units,UnitGUID("nameplate"..i))
+                        t.aggroFriendly.amount=t.aggroFriendly.amount+1
+                    else
+                        tinsert(t.friendly.units,UnitGUID("nameplate"..i))
+                        t.friendly.amount=t.hostile.amount+1
+                    end
+                elseif UnitAffectingCombat("nameplate"..i)then
+                    tinsert(t.aggroNeutral.units,UnitGUID("nameplate"..i))
+                    t.aggroNeutral.amount=t.aggroNeutral.amount+1
+                else
+                    tinsert(t.neutral.units,UnitGUID("nameplate"..i))
+                    t.neutral.amount=t.neutral.amount+1
+                end
+            else
+                tinsert(t.OOR.units,UnitGUID("nameplate"..i))
+                t.OOR.amount=t.OOR.amount+1
+            end
+        end
+        i=i+1
+    end
+    return t
+end
+function util:GetNearbyEnemies(range)
+    local t={
+        units={
+            
+        },
+        amount=0
+    }
+    local i=1
+    while UnitExists("nameplate"..i)or i<=40 do -- Make sure that all nameplates are scanned.
+        if UnitExists("nameplate"..i)and(UnitIsEnemy("player","nameplate"..i)or(UnitAffectingCombat("nameplate"..i)and not UnitIsFriend("player","nameplate"..i)))then
+            if(not range)or(select(2,self.util:GetUnitRange("nameplate"..i))or 0)<=range then
+                tinsert(t.units,UnitGUID("nameplate"..i))
+                t.amount=t.amount+1
+            end
+        end
+        i=i+1
+    end
+    return t
+end
+function util:GetNearbyFriends(range)
+    local t={
+        units={
+            
+        },
+        amount=0
+    }
+    local i=1
+    while UnitExists("nameplate"..i)or i<=40 do -- Make sure that all nameplates are scanned.
+        if UnitExists("nameplate"..i)and UnitIsFriend("player","nameplate"..i)then
+            if(not range)or(select(2,self.util:GetUnitRange("nameplate"..i))or 0)<=range then
+                tinsert(t.units,UnitGUID("nameplate"..i))
+                t.amount=t.amount+1
+            end
+        end
+        i=i+1
+    end
+    return t
 end

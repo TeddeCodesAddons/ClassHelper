@@ -2,7 +2,7 @@ local numNamePlates=0
 local names={
 
 }
-local function getNamePlate(u)
+--[[local function getNamePlate(u)
     if numNamePlates>0 then
         for i=1,numNamePlates do
             if _G["NamePlate"..i].UnitFrame and _G["NamePlate"..i].UnitFrame.BuffFrame and _G["NamePlate"..i].UnitFrame.BuffFrame.unit=="nameplate"..u then
@@ -10,6 +10,9 @@ local function getNamePlate(u)
             end
         end
     end
+end]]
+local function getNamePlate(u) -- Always check this code every patch!!
+    return C_NamePlate.GetNamePlateForUnit("nameplate"..u)
 end
 function ClassHelper:NewFrameOnNameplate(guid,frameId)
     local np=self:GetNameplate(guid)

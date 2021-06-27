@@ -79,7 +79,7 @@ local function newCmd(commandName,syntax,description,width,header)
     end
     button:SetScript("OnClick",function(self)editor:SetText("-- @syntax: off\n"..syntax)desc:SetText(description)self:Disable()if lastButton then lastButton:Enable()end lastButton=self end)
 end
-newCmd("ClassHelper.util:GetSpellInfo",[=[local itemInfo=ClassHelper.util:GetSpellInfo("spellName"or spellId or"itemName"or itemId)
+newCmd("ClassHelper:GetSpellInfo",[=[local itemInfo=ClassHelper:GetSpellInfo("spellName"or spellId or"itemName"or itemId)
 --[[
 itemInfo={
     actionButtons={}, -- <Pointers to the action buttons this spell appears on>,
@@ -101,9 +101,9 @@ itemInfo={
 ]]]=],[[This will return the ALL of the spell's useful information. Make sure to select the right attribute.
 EX: You want to get the spell's cooldown to put it into an icon frame, use .cooldown.max/remaining/lastCastTime, however if you want to check if the spell is learned, use .learned,
 this function makes everything a lot more efficient, instead of having to look for the correct blizzard function to get what you want.]],200,"\124cffff6600IMPORTANT!")
-newCmd("ClassHelper.util:GetGUID",[[local guid=ClassHelper.util:GetGUID("nameplateX" or unitId)]],[[Will get the unit GUID of a certain nameplate, or unit.
-Use ClassHelper.util:GetGUID("nameplateX") where X is the nameplate ID to get GUIDs from nameplates.]],200)
-newCmd("ClassHelper.util:GetNPCID",[=[local npcTable=ClassHelper.util:GetNPCID("guid")
+newCmd("ClassHelper:GetGUID",[[local guid=ClassHelper:GetGUID("nameplateX" or unitId)]],[[Will get the unit GUID of a certain nameplate, or unit.
+Use ClassHelper:GetGUID("nameplateX") where X is the nameplate ID to get GUIDs from nameplates.]],200)
+newCmd("ClassHelper:GetNPCID",[=[local npcTable=ClassHelper:GetNPCID("guid")
 --[[
 npcTable={
     type=<unit's type>, --"Creature" or "Player" (etc...)
@@ -115,6 +115,43 @@ npcTable={
 }
 ]]
 ]=],[[Gets the NPC's info from it's GUID. Can also be done with: local type,_,server,instance,zone,npc,spawn=strsplit("-",guid)]],175)
+newCmd("ClassHelper:GetNearbyEnemies",[=[local unitTable=ClassHelper:GetNearbyEnemies(range)
+--[[
+unitTable={
+    amount=0, -- Integer, number of units on nameplates within the specified range.
+    units={
+        -- Unit GUIDs of selected units.
+    }
+}
+]]]=],[[Will return a list of enemy units or aggroed neutral units within the specified range. Make sure to include .amount if you only want the number of units in range. Only detects units on displayed nameplates.]],200,"Unit detection")
+newCmd("ClassHelper:GetNearbyFriends",[=[local unitTable=ClassHelper:GetNearbyEnemies(range)
+--[[
+unitTable={
+    amount=0, -- Integer, number of units on nameplates within the specified range.
+    units={
+        -- Unit GUIDs of selected units.
+    }
+}
+]]]=],[[Will return a list of friendly units within the specified range. Make sure to include .amount if you only want the number of units in range. Only detects units on displayed nameplates.]],200)
+newCmd("ClassHelper:GetNearbyUnits",[=[local allUnits=ClassHelper:GetNearbyEnemies(range)
+--[[
+allUnits={
+    OOR=<UNIT_TABLE>, -- Units that were out of range. (Not sorted, use another range query to find these units.)
+    aggroNeutral=<UNIT_TABLE>, -- Neutral units that were in range and aggroed. UNIT_TABLE syntax is used.
+    aggroHostile=<UNIT_TABLE>, -- Hostile units that were in range and aggroed.
+    aggroFriendly=<UNIT_TABLE>, -- Friendly units can affect combat when you benefit them with healing or other effects.
+    neutral=<UNIT_TABLE>, -- Neutral units that were in range and NOT aggroed.
+    hostile=<UNIT_TABLE>, -- Hostile units that were in range and NOT aggroed.
+    friendly=<UNIT_TABLE>, -- Friendly units that were in range and NOT "aggroed".
+    units=<UNIT_TABLE> -- ALL units that were in range. (Friendly, hostile, and neutral)
+}
+UNIT_TABLE={
+    amount=0, -- Integer, number of units on nameplates within the specified range.
+    units={
+        -- Unit GUIDs of selected units.
+    }
+}
+]]]=],[[Returns a complex range check of all nearby units. Units can only be found if they have a nameplate.]],200)
 newCmd("ClassHelper:NewBar",[[local bar=ClassHelper:NewBar(time,"text",spellCD)]],[[Creates a new timer bar.
 This bar can be used to track a cooldown, if specified, but MUST be a spell ID.
 (If you don't know, use '/ch debug' and cast the spell to get the ID.)
@@ -194,7 +231,7 @@ iconFrame:Shake() -- Toggles shaking, use again to disable.
 iconFrame:IsShaking()
 iconFrame:SetBorder(r,g,b,a) -- Changes the IconFrame's border color.
 iconFrame:SetDuration(start,duration,r,g,b,a) -- You MUST specify a start time and a duration. RGBA override will prevent the timer from changing color when it is going to expire.
-iconFrame:SetIcon(icon) -- Specify an icon ID. Can be found with ClassHelper.util:GetSpellInfo("spell").icon]],[[Creates an IconFrame with the specified methods.
+iconFrame:SetIcon(icon) -- Specify an icon ID. Can be found with ClassHelper:GetSpellInfo("spell").icon]],[[Creates an IconFrame with the specified methods.
 You can glow this IconFrame and change it's timer, color, and stacks.]],200)
 newCmd("ClassHelper:NewPowerBar",[[GLOBAL_BAR_OBJECT=ClassHelper:NewPowerBar("powerType")]],"Creates a new (mana) bar. This bar can be customized. It can display any power type. EX: \124cffff6600COMBOPOINTS\124r, \124cffff6600COMBO_POINTS\124r are both combo points, \124cffff6600SOUL_SHARDS\124r and \124cffff6600SOUL_SHARD_FRAGMENTS\124r is for soul shards and their fragments. You can create multiple bars. Just make sure to make them a global variable, or a global function that can access them, otherwise you can't hide them when the mod unloads.",200,"Power bars")
 newCmd("ClassHelper:DoManaAlerts",[[ClassHelper:DoManaAlerts()]],[[Alerts if you have gone below 50%, 35%, or 15% mana.

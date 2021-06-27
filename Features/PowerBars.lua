@@ -80,6 +80,32 @@ local powerDictionary={
     ["HEALTH"]="HEALTH",
     ["DEFAULT"]="DEFAULT"
 }
+function ClassHelper:GetSpellCost(spell,costType)
+    local cost=GetSpellPowerCost(spell)
+    if not cost then return end
+    if costType then
+        if powerDictionary[costType]then
+            costType=powerDictionary[costType]
+        end
+        for i=1,getn(cost)do
+            if cost[i].type==costType or cost[i].name==costType then
+                return cost[i].cost
+            end
+        end
+    else
+        return cost[1].cost
+    end
+end
+function ClassHelper:CanCastSpell(spell)
+    local cost=GetSpellPowerCost(spell)
+    if not cost then return end
+    for i=1,getn(cost)do
+        if UnitPower("player",cost[i].type)<cost[i].cost then
+            return false
+        end
+    end
+    return true
+end
 function ClassHelper:GetPowerType(power)
     if not power then return 0 end -- If nil, return mana
     if tonumber(power)==power then return power end -- If number, return itself

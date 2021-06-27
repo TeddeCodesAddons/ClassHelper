@@ -867,13 +867,17 @@ local function newUnitFrame(unit)
         _hp=_hp/_hpmax
         if _hp>1 then return self end -- Bad render frame (_hp is most likely infinity, divide by 0)
         obj.dead=UnitIsDeadOrGhost(u)
-        if tContains(enabledElements,"percent")then
+        if tContains(enabledElements,"percent")or tContains(enabledElements,"healthnumber")then
             if _hp==0 then
                 t1:SetText("Dead")
             elseif obj.dead then
                 t1:SetText("Ghost")
             else
-                t1:SetText(math.floor(_hp*100).."%")
+                if tContains(enabledElements,"healthnumber")then
+                    t1:SetText(obj.health.current)
+                else
+                    t1:SetText(math.floor(_hp*100).."%")
+                end
             end
         else
             t1:SetText("")

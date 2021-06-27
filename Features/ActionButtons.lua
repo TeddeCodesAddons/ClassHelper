@@ -4,60 +4,7 @@ ClassHelper.lit_spells={
 ClassHelper.lit_spell_ids={
     
 }
-function ClassHelper:LightUpSpell(spell)
-    spell=ClassHelper.util:GetSpellInfo(spell).id
-    if not spell then return end
-    if not tContains(self.lit_spell_ids,spell)then
-        tinsert(self.lit_spell_ids,spell)
-    end
-    if tonumber(spell)then
-        local b=self:SearchActionBar(tonumber(spell),false)
-        for i=1,getn(b)do
-            ActionButton_ShowOverlayGlow(_G[b[i]])
-            if not tContains(self.lit_spells,b[i])then
-                tinsert(self.lit_spells,b[i])
-            end
-        end
-    else
-        local b=self:SearchActionBar(spell,true)
-        for i=1,getn(b)do
-            ActionButton_ShowOverlayGlow(_G[b[i]])
-            if not tContains(self.lit_spells,b[i])then
-                tinsert(self.lit_spells,b[i])
-            end
-        end
-    end
-end
-function ClassHelper:UnLightUpSpell(spell)
-    spell=ClassHelper.util:GetSpellInfo(spell).id
-    local ididx=nil
-    if spell then
-        ididx=tIndexOf(self.lit_spell_ids,spell)
-    end
-    if ididx then
-        tremove(self.lit_spell_ids,ididx)
-    end
-    if tonumber(spell)then
-        local b=self:SearchActionBar(tonumber(spell),false)
-        for i=1,getn(b)do
-            ActionButton_HideOverlayGlow(_G[b[i]])
-            local idx=tIndexOf(self.lit_spells,b[i])
-            if idx then
-                tremove(self.lit_spells,idx)
-            end
-        end
-    else
-        local b=self:SearchActionBar(spell,true)
-        for i=1,getn(b)do
-            ActionButton_HideOverlayGlow(_G[b[i]])
-            local idx=tIndexOf(self.lit_spells,b[i])
-            if idx then
-                tremove(self.lit_spells,idx)
-            end
-        end
-    end
-end
-function ClassHelper:SearchActionBar(id,convertToId)
+function searchActionBar(id,convertToId)
     if not id then return {}end
     if convertToId and GetSpellInfo(id)then
         id=select(7,GetSpellInfo(id))
@@ -120,6 +67,59 @@ function ClassHelper:SearchActionBar(id,convertToId)
     end
     return r
 end
+function ClassHelper:LightUpSpell(spell)
+    spell=ClassHelper.util:GetSpellInfo(spell).id
+    if not spell then return end
+    if not tContains(self.lit_spell_ids,spell)then
+        tinsert(self.lit_spell_ids,spell)
+    end
+    if tonumber(spell)then
+        local b=searchActionBar(tonumber(spell),false)
+        for i=1,getn(b)do
+            ActionButton_ShowOverlayGlow(_G[b[i]])
+            if not tContains(self.lit_spells,b[i])then
+                tinsert(self.lit_spells,b[i])
+            end
+        end
+    else
+        local b=searchActionBar(spell,true)
+        for i=1,getn(b)do
+            ActionButton_ShowOverlayGlow(_G[b[i]])
+            if not tContains(self.lit_spells,b[i])then
+                tinsert(self.lit_spells,b[i])
+            end
+        end
+    end
+end
+function ClassHelper:UnLightUpSpell(spell)
+    spell=ClassHelper.util:GetSpellInfo(spell).id
+    local ididx=nil
+    if spell then
+        ididx=tIndexOf(self.lit_spell_ids,spell)
+    end
+    if ididx then
+        tremove(self.lit_spell_ids,ididx)
+    end
+    if tonumber(spell)then
+        local b=searchActionBar(tonumber(spell),false)
+        for i=1,getn(b)do
+            ActionButton_HideOverlayGlow(_G[b[i]])
+            local idx=tIndexOf(self.lit_spells,b[i])
+            if idx then
+                tremove(self.lit_spells,idx)
+            end
+        end
+    else
+        local b=searchActionBar(spell,true)
+        for i=1,getn(b)do
+            ActionButton_HideOverlayGlow(_G[b[i]])
+            local idx=tIndexOf(self.lit_spells,b[i])
+            if idx then
+                tremove(self.lit_spells,idx)
+            end
+        end
+    end
+end
 local f=CreateFrame("FRAME")
 f:RegisterEvent("ACTIONBAR_HIDEGRID")
 f:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
@@ -159,9 +159,9 @@ function ClassHelper:FlashSpell(spell)
         
     }
     if tonumber(spell)then
-        b=self:SearchActionBar(tonumber(spell),false)
+        b=searchActionBar(tonumber(spell),false)
     else
-        b=self:SearchActionBar(spell,true)
+        b=searchActionBar(spell,true)
     end
     if getn(b)==0 then return end
     for i=1,getn(b)do

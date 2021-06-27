@@ -195,7 +195,9 @@ end
 ClassHelper:CreateSlashCommand("set-update-mode","ClassHelper:SetUpdateMode(arguments)","Sets the update mode to 1 or 0. If set to 1, when you attempt to download a mod that already exists, you will update that mod instead.")
 function ClassHelper:ShareMod(modObject,channel,recipient)
     ch=channel
-    rec=recipient.."-"..select(2,UnitFullName("player"))
+    if recipient then
+        rec=recipient.."-"..select(2,UnitFullName("player"))
+    end
     bytes=0
     if sending then
         self:Print("\124cffff0000Please wait to send another mod! If you send mods too quickly, they can be mixed up by the receiver.")

@@ -44,7 +44,8 @@ local COLORS={
     ["ff6600"]={
         "ClassHelper",
         "AlertSystem"
-    }
+    },
+    ["ff0000"]=ClassHelper.removed
 }
 local SYMBOLS={
     "~",
@@ -123,6 +124,11 @@ local function addColorToText(text)
                 i=i+12
                 streak=""
                 prev=""
+            elseif tContains(COLORS["ff0000"],strsub(prev,1,16))or tContains(COLORS["ff0000"],prev)then
+                text=insertAt(text,i-strlen(prev),strlen(prev)-1,"ff0000")
+                i=i+12
+                streak=""
+                prev=""
             elseif tContains(PREDEFINED,prev)then
                 text=insertAt(text,i-strlen(prev),strlen(prev)-1,"cccc00")
                 i=i+12
@@ -146,6 +152,9 @@ local function addColorToText(text)
                 i=i+12
             elseif tContains(COLORS["999999"],newStreak)then
                 text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"999999")
+                i=i+12
+            elseif tContains(COLORS["ff0000"],strsub(newStreak,1,16))or tContains(COLORS["ff0000"],newStreak)then
+                text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"ff0000")
                 i=i+12
             elseif tContains(PREDEFINED,newStreak)then
                 text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"cccc00")
@@ -181,6 +190,9 @@ local function addColorToText(text)
                 i=i+12
             elseif tContains(COLORS["999999"],newStreak)then
                 text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"999999")
+                i=i+12
+            elseif tContains(COLORS["ff0000"],strsub(newStreak,1,16))or tContains(COLORS["ff0000"],newStreak)then
+                text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"ff0000")
                 i=i+12
             elseif tContains(PREDEFINED,newStreak)then
                 text=insertAt(text,i-strlen(newStreak),strlen(newStreak)-1,"cccc00")
@@ -313,3 +325,20 @@ function ClassHelper:DefineSyntaxBox(box,onkeydown)
         C_Timer.NewTimer(0.5,update)
     end)
 end
+local f=CreateFrame("FRAME")
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:SetScript("OnEvent",function()
+    ClassHelper:DefaultSavedVariable("ModEditor","AdvancedSyntax","true")
+    if ClassHelper:Load("ModEditor","AdvancedSyntax")=="true"then
+        local t={
+            "AlertSystem:ShowText",
+            "ClassHelper.vars"
+        }
+        for i,v in pairs(ClassHelper)do
+            if type(v)=="function"then
+                tinsert(t,"ClassHelper:"..i)
+            end
+        end
+        COLORS["ff6600"]=t
+    end
+end)
