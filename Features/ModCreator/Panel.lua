@@ -361,11 +361,13 @@ panel:Hide()
 editorPanel:Show()
 local ui_showing=false
 function ClassHelper:ToggleUI(toggle)
-    toggle=strlower(toggle)
-    if toggle=="show"then
+    if toggle then
+        toggle=strlower(toggle)
+    end
+    if toggle and toggle=="show"then
         ui_showing=true
         panel:Show()
-    elseif toggle=="hide"then
+    elseif toggle and toggle=="hide"then
         ui_showing=false
         panel:Hide()
     elseif ui_showing then

@@ -135,6 +135,43 @@ local function handle(self,event,...)
                 ClassHelper:Print("\124cffff0000"..sender.." has denied your mod because it was too large.")
             elseif p=="A"then
                 receive[sender].default_settings=receive[sender].default_settings..t
+            elseif p=="V"then
+                local versionNums={strsplit(".",t)}
+                if not ClassHelper.VERSION.latest then
+                    ClassHelper.VERSION.latest={strsplit(".",ClassHelper.VERSION.str)}
+                end
+                if versionNums[1]and versionNums[2]and versionNums[3]then
+                    for i=1,3 do
+                        if versionNums[i]>ClassHelper.VERSION.latest[i]then
+                            ClassHelper.VERSION.latest=versionNums
+                            ClassHelper:ShowIsOutOfDate(t)
+                        elseif versionNums[i]<ClassHelper.VERSION.latest[i]then
+                            return
+                        end
+                    end
+                end
+            end
+        elseif prefix=="ClassHelper"then
+            local t=""
+            if strlen(text)>1 then
+                t=strsub(text,2,strlen(text))
+            end
+            local p=strsub(text,1,1)
+            if p=="V"then
+                local versionNums={strsplit(".",t)}
+                if not ClassHelper.VERSION.latest then
+                    ClassHelper.VERSION.latest={strsplit(".",ClassHelper.VERSION.str)}
+                end
+                if versionNums[1]and versionNums[2]and versionNums[3]then
+                    for i=1,3 do
+                        if tonumber(versionNums[i])>tonumber(ClassHelper.VERSION.latest[i])then
+                            ClassHelper.VERSION.latest=versionNums
+                            ClassHelper:ShowIsOutOfDate(t)
+                        elseif tonumber(versionNums[i])<tonumber(ClassHelper.VERSION.latest[i])then
+                            return
+                        end
+                    end
+                end
             end
         end
     end

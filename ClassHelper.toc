@@ -1,11 +1,11 @@
-## Interface: 90005
-## X-Interface: 90005
-## X-WhatsNew: Removed the annoying '.util' in between ClassHelper and all utility functions.~Added new unit checking functions to let mods automatically detect cleave and other spreading effects.~Fixed nameplate issues with the new updates.~Added invisible "timer" objects. Use ClassHelper:NewTimer() instead of ClassHelper:NewBar() unless you want a bar to show.
+## Interface: 90100
+## X-Interface: 90100
+## X-WhatsNew: Added a minimap icon!~Removed the annoying '.util' in between ClassHelper and all utility functions.~Added new unit checking functions to let mods automatically detect cleave and other spreading effects.~Fixed nameplate issues with the new updates.~Added invisible "timer" objects. Use ClassHelper:NewTimer() instead of ClassHelper:NewBar() unless you want a bar to show.
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
 ## Author: TeddeCodesAddons
-## Version: 9.0.16
-## SavedVariables: ClassHelper_Data
+## Version: 9.0.17
+## SavedVariables: ClassHelper_Data, ClassHelper_Minimap
 ## LoadOnDemand: 0
 # Core
 Core.lua
@@ -17,6 +17,8 @@ Libraries\LibStub\LibStub.lua
 Libraries\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libraries\LibHealComm-4.0\LibHealComm-4.0.lua
+Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libraries\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 # Modules
 Modules\Module_Names.lua
@@ -27,6 +29,12 @@ Features\SlashCommands.lua
 
 # Variables
 Features\SavedVariables.lua
+
+# Version
+Version.lua
+
+# Minimap
+Minimap.lua
 
 # Mod features
 Features\ActionButtons.lua

@@ -355,7 +355,7 @@ end
 local function make_data_compatible(oldVersion)
     local ver=oldVersion.update
     local interface=oldVersion.interface
-    if interface<90002 or(interface==90002 and ver<9)then
+    if tonumber(interface)<90002 or(tonumber(interface)==90002 and tonumber(ver)<9)then
         for i,v in pairs(ClassHelper_Data["profiles"])do
             for modName,modData in pairs(v["mods"])do
                 if not modData.settings then
