@@ -1,4 +1,3 @@
-seterrorhandler(print)
 ClassHelper.VERSION={ -- No more need for updating version here.
     interface=GetAddOnMetadata(ClassHelper.ADDON_PATH_NAME,"X-Interface"),
     str=GetAddOnMetadata(ClassHelper.ADDON_PATH_NAME,"Version"),
