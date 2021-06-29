@@ -4,7 +4,7 @@
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
 ## Author: TeddeCodesAddons
-## Version: 9.0.17
+## Version: 9.1.1
 ## SavedVariables: ClassHelper_Data, ClassHelper_Minimap
 ## LoadOnDemand: 0
 # Core
