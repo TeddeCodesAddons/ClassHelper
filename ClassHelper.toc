@@ -1,10 +1,10 @@
 ## Interface: 90100
 ## X-Interface: 90100
-## X-WhatsNew: Added a minimap icon!~Removed the annoying '.util' in between ClassHelper and all utility functions.~Added new unit checking functions to let mods automatically detect cleave and other spreading effects.~Fixed nameplate issues with the new updates.~Added invisible "timer" objects. Use ClassHelper:NewTimer() instead of ClassHelper:NewBar() unless you want a bar to show.
+## X-WhatsNew: Added TTS! Use ClassHelper:PlayTTSWarning("text",voice,volume)~Type '/ch tts <message>' to sample.
 ## Title: |cffff6600ClassHelper
 ## Notes: Lightweight customizable assistant for any player.
 ## Author: TeddeCodesAddons
-## Version: 9.1.1
+## Version: 9.1.2
 ## SavedVariables: ClassHelper_Data, ClassHelper_Minimap
 ## LoadOnDemand: 0
 # Core
