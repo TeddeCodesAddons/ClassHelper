@@ -187,6 +187,7 @@ any in-game sound (using PlaySound)
 any sound file (using PlaySoundFile)
 To play a voice countdown, instead use ClassHelper:VoiceCountdown(X) where X is your countdown.
 If you want to play a countdown number in a different voice, specify a voice under countdownVoice. (See ClassHelper:VoiceCountdown for more info)]],200)
+newCmd("ClassHelper:PlayTTSWarning",[[ClassHelper:PlayTTSWarning("text",voice,volume)]],"Plays text-to-speech. Change voice and volume to what you want to play it on. Beware that if the voice doesn't exist, will default to voice 0. There is only voice 0 and voice 1 as of patch 9.1.",175)
 newCmd("ClassHelper:VoiceCountdown",[[ClassHelper:VoiceCountdown(countdown,channel,voice)]],[[Creates a countdown using the specified voice in the sound channel.
 If no channel is specified, default is 'master'.
 If no voice is specified, default is 'Corsica'.

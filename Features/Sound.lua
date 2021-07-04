@@ -55,3 +55,25 @@ function ClassHelper:PlayWarningSound(soundName,channel,countdownVoice)
         return PlaySound(8332,channel)
     end
 end
+function ClassHelper:GetTTSVoice(voice)
+    local voices=C_VoiceChat.GetTtsVoices()
+    for i=1,getn(voices)do
+        if voices[i].voiceID==voice or voices[i].name==voice then
+            return voices[i]
+        end
+    end
+    return voices[1]
+end
+function ClassHelper:PlayTTSWarning(text,voice,volume)
+    local vol=0
+    if volume then
+        vol=TextToSpeechFrameAdjustVolumeSlider:GetValue()or 0
+        TextToSpeech_SetVolume(volume)
+    end
+    local voice=self:GetTTSVoice(voice)
+    TextToSpeech_Speak(text,voice)
+    if volume then
+        TextToSpeech_SetVolume(vol)
+    end
+end
+ClassHelper:CreateSlashCommand("tts","ClassHelper:PlayTTSWarning(arguments)","Samples the text on the TTS interpreter. Volume will be at 100% and voice will be set to 0. Change these with ClassHelper:PlayTTSWarning(text,voice,volume)")
