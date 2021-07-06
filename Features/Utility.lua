@@ -370,3 +370,35 @@ function util:GetNearbyFriends(range)
     end
     return t
 end
+function util:GetNearbyGroupMembers(range)
+    local t={
+        units={
+            
+        },
+        amount=0
+    }
+    if IsInRaid()then
+        local i=1
+        while UnitExists("raid"..i)or i<=40 do
+            if UnitExists("raid"..i)and UnitIsFriend("player","raid"..i)then -- Charmed??
+                if(not range)or(select(2,self.util:GetUnitRange("raid"..i))or 0)<=range then
+                    tinsert(t.units,"raid"..i)
+                    t.amount=t.amount+1
+                end
+            end
+            i=i+1
+        end
+    elseif IsInGroup()then
+        local i=1
+        while UnitExists("party"..i)or i<=40 do
+            if UnitExists("party"..i)and UnitIsFriend("player","party"..i)then -- Charmed??
+                if(not range)or(select(2,self.util:GetUnitRange("party"..i))or 0)<=range then
+                    tinsert(t.units,"party"..i)
+                    t.amount=t.amount+1
+                end
+            end
+            i=i+1
+        end
+    end
+    return t
+end

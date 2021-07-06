@@ -13,7 +13,7 @@ function ClassHelper:VoiceCountdown(countdown,channel,voice)
             PlaySoundFile("Interface/AddOns/"..(ClassHelper.ADDON_PATH_NAME).."/Assets/countdown/"..voice.."/"..countdown..".ogg",channel)
         end
         if countdown>1 then
-            C_Timer.NewTimer(1,function()self:VoiceCountdown(countdown-1,channel)end)
+            C_Timer.NewTimer(1,function()self:VoiceCountdown(countdown-1,channel,voice)end)
         end
     end
 end
